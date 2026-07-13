@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<body>
+
+<button onclick="testar()">Ping Google</button>
+
+<pre id="resultado"></pre>
+
+<script>
+async function testar() {
+    try {
+        const resposta = await fetch("/ping/google.com");
+
+        if (!resposta.ok) {
+            throw new Error(`O servidor retornou status ${resposta.status}`);
+        }
+
+        const dados = await resposta.json();
+        document.getElementById("resultado").textContent = JSON.stringify(dados, null, 2);
+    } catch (erro) {
+        document.getElementById("resultado").textContent = "Falha na requisição: " + erro.message;
+    }
+}
+</script>
+
+</body>
+</html>
