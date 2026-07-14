@@ -1,27 +1,49 @@
 <!DOCTYPE html>
-<html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Teste titulo</title>
+</head>
+
 <body>
 
-<button onclick="testar()">Ping Google</button>
+    <h2>Teste</h2>
 
-<pre id="resultado"></pre>
+    <input type="text" id="host" placeholder="Digite um IP ou hostname" value="8.8.8.8">
 
-<script>
-async function testar() {
-    try {
-        const resposta = await fetch("/ping/8.8.8.8");
+    <button onclick="testar()">Ping Google</button>
 
-        if (!resposta.ok) {
-            throw new Error(`O servidor retornou status ${resposta.status}`);
+    <pre id="resultado"></pre>
+
+    <script>
+        async function testar() {
+
+            const host = document.getElementById("host").value.trim();
+
+            if (!host) {
+                alert("Informe um IP ou hostname.");
+                return;
+            }
+
+            try {
+
+                const resposta = await fetch(`/ping/${encodeURIComponent(host)}`);
+
+                if (!resposta.ok) {
+                    throw new Error(`O servidor retornou status ${resposta.status}`);
+                }
+
+                const dados = await resposta.json();
+
+                document.getElementById("resultado").textContent = JSON.stringify(dados, null, 2);
+
+            } catch (erro) {
+                document.getElementById("resultado").textContent = "Falha na requisição: " + erro.message;
+            }
         }
-
-        const dados = await resposta.json();
-        document.getElementById("resultado").textContent = JSON.stringify(dados, null, 2);
-    } catch (erro) {
-        document.getElementById("resultado").textContent = "Falha na requisição: " + erro.message;
-    }
-}
-</script>
+    </script>
 
 </body>
+
 </html>
