@@ -1,0 +1,18 @@
+#container-bg{
+    display: flex;
+    justify-content:space-evenly;
+    align-items: center;
+}
+
+#Dados{
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+}
+
+#Caixa {
+    border: 1px solid black;
+    border-radius: 8px;
+    padding-inline: 0;
+    padding: 1rem;
+}

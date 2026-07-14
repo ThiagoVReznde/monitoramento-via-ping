@@ -9,11 +9,19 @@ def index():
 
 @app.route("/ping/<host>")
 def ping(host):
+    import datetime
+
+    sent = datetime.datetime.now()
     tempo = ping3.ping(host)
+    received = datetime.datetime.now()
+
+    delta = received - sent
+
     return jsonify({
         "host": host,
         "alive": tempo is not None,
-        "rtt_ms": tempo * 1000 if tempo else None
+        "rtt_ms": tempo * 1000 if tempo else None,
+        "diff_ms": delta.microseconds if tempo else None
     })
 
 if __name__ == "__main__":

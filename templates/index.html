@@ -4,46 +4,165 @@
 <head>
     <meta charset="UTF-8">
     <title>Teste titulo</title>
+    <link rel="stylesheet" href= "{{ url_for('static',filename='styles/styles.css') }}">
 </head>
 
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
 <body>
+    <header>
+        <h2 style="text-align:center;">Teste</h2>
 
-    <h2>Teste</h2>
-
-    <input type="text" id="host" placeholder="Digite um IP ou hostname" value="8.8.8.8">
-
-    <button onclick="testar()">Ping Google</button>
+       
+    </header>
 
     <pre id="resultado"></pre>
 
+    <div id="CaixText"> 
+    <input type="text" id="host" placeholder="Digite um IP ou hostname" value="8.8.8.8">
+    
+    <button onclick="testar()">Ping</button>
+    </div>
+    <!-- Este DIV recebera o grafico e o div com os outros dados-->
+    <div id="container-bg">
+
+        <canvas id="myChart" style="width:100%;max-width:600px"></canvas>
+        <div id = "Dados">
+            <div id = "Caixa">
+                <p>RTT total :</p>
+                <p id="rtt"></p>
+            </div>
+
+            <div id="Caixa">
+                <p> Jitter :.</p>
+                <p id = "jitter"></p>
+            </div>
+            <div id="Caixa">
+                <p>Perda de pacotes: </p>
+                <p id = "perda"></p>
+            </div>
+
+        </div>
+
+    </div>
+
     <script>
+        
+    </script>
+
+    <script>
+
+        const xValues = [];
+        const yValues_rtt = [];
+        const yValues_jit = [];
+
+        var ctx = document.getElementById('myChart');
+
+        var CoolChart = new Chart(ctx, {
+        type: "line",
+        data: {
+            labels: xValues,
+
+            datasets: [{
+                fill: false,
+                lineTension: 0,
+                backgroundColor: "rgba(0,0,255,1.0)",
+                borderColor: "rgba(0,0,255,0.1)",
+                data: yValues_rtt
+            }, {
+                fill: false,
+                lineTension: 0,
+                backgroundColor: "rgba(255,0,0,1.0)",
+                borderColor: "rgba(255,0,0,0.1)",
+                data: yValues_jit
+            }]
+        },
+        options: {
+            plugins: {
+            legend: {display:false},
+            title: {
+                display: true,
+                text: "ping rtt",
+                font: {size:16}
+            }
+            }
+
+        }
+        });
+
+        function addData(chart, label, newDataArray) {
+            chart.data.labels.push(label);
+            
+            chart.data.datasets.forEach((dataset, index) => {
+                dataset.data.push(newDataArray[index]);
+            });
+
+            chart.update();
+        }
+
+        function sleep(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        }
+
         async function testar() {
 
             const host = document.getElementById("host").value.trim();
-
+            
             if (!host) {
                 alert("Informe um IP ou hostname.");
                 return;
             }
 
-            try {
+            let perda_pacotes = 0
+            let total_pacotes = 0
+            let last_diff = 0
+            let dados
 
-                const resposta = await fetch(`/ping/${encodeURIComponent(host)}`);
+            while (true){
+                
+                
+                    try {
+                        total_pacotes = total_pacotes + 1
 
-                if (!resposta.ok) {
-                    throw new Error(`O servidor retornou status ${resposta.status}`);
-                }
+                        const resposta = await fetch(`/ping/${encodeURIComponent(host)}`);
 
-                const dados = await resposta.json();
+                        if (!resposta.ok){
+                            perda_pacotes = perda_pacotes + 1
+                            last_diff = 0
+                            dados = 0
+                            await addData(CoolChart, total_pacotes, [0, last_diff]);
 
-                document.getElementById("resultado").textContent = JSON.stringify(dados, null, 2);
+                            throw new Error(`O servidor retornou status ${resposta.status}`);
+                        }
 
-            } catch (erro) {
-                document.getElementById("resultado").textContent = "Falha na requisição: " + erro.message;
-            }
+                        dados = await resposta.json();
+
+                        if (dados.rtt_ms == null){
+                            perda_pacotes = perda_pacotes + 1
+                            dados.rtt_ms = 0
+                            last_diff = 0
+                            await addData(CoolChart, total_pacotes, [0, last_diff]);
+
+                            throw new Error(`TimedOut`);
+                        }
+
+                        let jiff = Math.abs((dados.diff_ms - last_diff)) / 1000
+                        document.getElementById('jitter').innerHTML = jiff;
+                        last_diff = dados.diff_ms
+                        
+                        document.getElementById('rtt').innerHTML = dados.rtt_ms;
+                        await addData(CoolChart, total_pacotes, [dados.rtt_ms, jiff]);
+                
+                    } catch (erro) {
+                        document.getElementById("resultado").textContent = "Falha na requisição: " + erro.message;
+                    }
+                    
+                    console.log(dados.rtt_ms)
+                    await sleep(3000);
+                
+            }    
         }
     </script>
-
 </body>
 
 </html>
