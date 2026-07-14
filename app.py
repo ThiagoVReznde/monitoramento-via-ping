@@ -3,7 +3,6 @@ import ping3
 
 app = Flask(__name__)
 
-# Rota que entrega o seu HTML para o navegador
 @app.route("/")
 def index():
     return render_template("index.html")

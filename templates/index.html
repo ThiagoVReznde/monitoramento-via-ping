@@ -9,7 +9,7 @@
 <script>
 async function testar() {
     try {
-        const resposta = await fetch("/ping/google.com");
+        const resposta = await fetch("/ping/8.8.8.8");
 
         if (!resposta.ok) {
             throw new Error(`O servidor retornou status ${resposta.status}`);
