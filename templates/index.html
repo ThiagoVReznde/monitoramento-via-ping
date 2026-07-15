@@ -4,51 +4,50 @@
 <head>
     <meta charset="UTF-8">
     <title>Teste titulo</title>
-    <link rel="stylesheet" href= "{{ url_for('static',filename='styles/styles.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static',filename='styles/styles.css') }}">
 </head>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <body>
     <header>
-        <h2 style="text-align:center;">Teste</h2>
+        <h2 style="text-align:center;">Manutenção de Ping</h2>
 
-       
+
     </header>
 
     <pre id="resultado"></pre>
 
-    <div id="CaixText"> 
-    <input type="text" id="host" placeholder="Digite um IP ou hostname" value="8.8.8.8">
-    
-    <button onclick="testar()">Ping</button>
+    <div id="CaixText">
+        <input type="text" id="host" placeholder="Digite um IP ou hostname" value="8.8.8.8">
+
+        <button onclick="testar()">Ping</button>
     </div>
     <!-- Este DIV recebera o grafico e o div com os outros dados-->
     <div id="container-bg">
 
         <canvas id="myChart" style="width:100%;max-width:600px"></canvas>
-        <div id = "Dados">
-            <div id = "Caixa">
-                <p>RTT total :</p>
+
+        <div id="Dados">
+
+            <div class="caixa">
+                <p>RTT medio :</p>
                 <p id="rtt"></p>
             </div>
 
-            <div id="Caixa">
-                <p> Jitter :.</p>
-                <p id = "jitter"></p>
+            <div class="caixa">
+                <p> Jitter :</p>
+                <p id="jitter"></p>
             </div>
-            <div id="Caixa">
-                <p>Perda de pacotes: </p>
-                <p id = "perda"></p>
+
+            <div class="caixa">
+                <p>Perda % de pacotes: </p>
+                <p id="perda"></p>
             </div>
 
         </div>
 
     </div>
-
-    <script>
-        
-    </script>
 
     <script>
 
@@ -59,40 +58,38 @@
         var ctx = document.getElementById('myChart');
 
         var CoolChart = new Chart(ctx, {
-        type: "line",
-        data: {
-            labels: xValues,
+            type: "line",
+            data: {
+                labels: xValues,
 
-            datasets: [{
-                fill: false,
-                lineTension: 0,
-                backgroundColor: "rgba(0,0,255,1.0)",
-                borderColor: "rgba(0,0,255,0.1)",
-                data: yValues_rtt
-            }, {
-                fill: false,
-                lineTension: 0,
-                backgroundColor: "rgba(255,0,0,1.0)",
-                borderColor: "rgba(255,0,0,0.1)",
-                data: yValues_jit
-            }]
-        },
-        options: {
-            plugins: {
-            legend: {display:false},
-            title: {
-                display: true,
-                text: "ping rtt",
-                font: {size:16}
-            }
-            }
+                datasets: [{
+                    fill: false,
+                    lineTension: 0,
+                    backgroundColor: "rgba(0,0,255,1.0)",
+                    borderColor: "rgba(0,0,255,0.1)",
+                    data: yValues_rtt
+                }, {
+                    fill: false,
+                    lineTension: 0,
+                    backgroundColor: "rgba(255,0,0,1.0)",
+                    borderColor: "rgba(255,0,0,0.1)",
+                    data: yValues_jit
+                }]
+            },
+            options: {
+                plugins: {
+                    legend: { display: false },
+                    title: {
+                        display: false,
+                    }
+                }
 
-        }
+            }
         });
 
         function addData(chart, label, newDataArray) {
             chart.data.labels.push(label);
-            
+
             chart.data.datasets.forEach((dataset, index) => {
                 dataset.data.push(newDataArray[index]);
             });
@@ -107,7 +104,7 @@
         async function testar() {
 
             const host = document.getElementById("host").value.trim();
-            
+
             if (!host) {
                 alert("Informe um IP ou hostname.");
                 return;
@@ -116,51 +113,59 @@
             let perda_pacotes = 0
             let total_pacotes = 0
             let last_diff = 0
+            let soma_ping = 0
+            let media_ping = 0
+            let perda_percentual
             let dados
 
-            while (true){
-                
-                
-                    try {
-                        total_pacotes = total_pacotes + 1
+            while (true) {
 
-                        const resposta = await fetch(`/ping/${encodeURIComponent(host)}`);
 
-                        if (!resposta.ok){
-                            perda_pacotes = perda_pacotes + 1
-                            last_diff = 0
-                            dados = 0
-                            await addData(CoolChart, total_pacotes, [0, last_diff]);
+                try {
+                    total_pacotes = total_pacotes + 1
 
-                            throw new Error(`O servidor retornou status ${resposta.status}`);
-                        }
+                    const resposta = await fetch(`/ping/${encodeURIComponent(host)}`);
 
-                        dados = await resposta.json();
+                    if (!resposta.ok) {
+                        perda_pacotes = perda_pacotes + 1
+                        last_diff = 0
+                        dados = 0
+                        await addData(CoolChart, total_pacotes, [0, last_diff]);
 
-                        if (dados.rtt_ms == null){
-                            perda_pacotes = perda_pacotes + 1
-                            dados.rtt_ms = 0
-                            last_diff = 0
-                            await addData(CoolChart, total_pacotes, [0, last_diff]);
-
-                            throw new Error(`TimedOut`);
-                        }
-
-                        let jiff = Math.abs((dados.diff_ms - last_diff)) / 1000
-                        document.getElementById('jitter').innerHTML = jiff;
-                        last_diff = dados.diff_ms
-                        
-                        document.getElementById('rtt').innerHTML = dados.rtt_ms;
-                        await addData(CoolChart, total_pacotes, [dados.rtt_ms, jiff]);
-                
-                    } catch (erro) {
-                        document.getElementById("resultado").textContent = "Falha na requisição: " + erro.message;
+                        throw new Error(`O servidor retornou status ${resposta.status}`);
                     }
-                    
-                    console.log(dados.rtt_ms)
-                    await sleep(3000);
-                
-            }    
+
+                    dados = await resposta.json();
+
+                    if (dados.rtt_ms == null) {
+                        perda_pacotes = perda_pacotes + 1
+                        dados.rtt_ms = 0
+                        last_diff = 0
+                        await addData(CoolChart, total_pacotes, [0, last_diff]);
+
+                        throw new Error(`TimedOut`);
+                    }
+                    soma_ping = soma_ping + dados.diff_ms / 1000
+                    let jitter = Math.abs((dados.diff_ms - last_diff)) / 1000
+
+                    document.getElementById('jitter').innerHTML = jitter;
+
+                    last_diff = dados.diff_ms
+
+                    media_ping = soma_ping / total_pacotes
+                    document.getElementById('rtt').innerHTML = media_ping;
+                    await addData(CoolChart, total_pacotes, [dados.rtt_ms, jitter]);
+
+                    perda_percentual = perda_pacotes / total_pacotes * 100
+                    document.getElementById('perda').innerHTML = perda_percentual;
+
+                } catch (erro) {
+                    document.getElementById("resultado").textContent = "Falha na requisição: " + erro.message;
+                }
+                console.log(dados.rtt_ms)
+                await sleep(3000);
+
+            }
         }
     </script>
 </body>
