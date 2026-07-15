@@ -7,15 +7,27 @@ app = Flask(__name__)
 def index():
     return render_template("index.html")
 
+#net_stat = psutil.net_io_counters(nowrap=True)
+#net_in_1 = net_stat.bytes_recv
+#net_out_1 = net_stat.bytes_sent
+#
+#time.sleep(5)
+#net_stat = psutil.net_io_counters(nowrap=True)
+#net_in_2 = net_stat.bytes_recv
+#net_out_2 = net_stat.bytes_sent
+#
+#net_in = round((net_in_2 - net_in_1) / 1024 / 1024, 3)
+#net_out = round((net_out_2 - net_out_1) / 1024 / 1024, 3)
+
 @app.route("/ping/<host>")
 def ping(host):
     import datetime
 
-    sent = datetime.datetime.now()
+    sent_time = datetime.datetime.now()
     tempo = ping3.ping(host)
-    received = datetime.datetime.now()
+    received_time = datetime.datetime.now()
 
-    delta = received - sent
+    delta = sent_time - received_time
 
     return jsonify({
         "host": host,

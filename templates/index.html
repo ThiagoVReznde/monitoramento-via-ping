@@ -25,11 +25,11 @@
     </div>
     <!-- Este DIV recebera o grafico e o div com os outros dados-->
     <div id="container-bg">
-
-        <canvas id="myChart" style="width:100%;max-width:600px"></canvas>
+        <div id="Graficos">
+            <canvas id="myChart" style="width:100%;max-width:600px"></canvas>
+        </div>
 
         <div id="Dados">
-
             <div class="caixa">
                 <p>RTT medio :</p>
                 <p id="rtt"></p>
@@ -50,48 +50,21 @@
     </div>
 
     <script>
-
-        const xValues = [];
-        const yValues_rtt = [];
-        const yValues_jit = [];
-
-        var ctx = document.getElementById('myChart');
-
-        var CoolChart = new Chart(ctx, {
-            type: "line",
-            data: {
-                labels: xValues,
-
-                datasets: [{
-                    fill: false,
-                    lineTension: 0,
-                    backgroundColor: "rgba(0,0,255,1.0)",
-                    borderColor: "rgba(0,0,255,0.1)",
-                    data: yValues_rtt
-                }, {
-                    fill: false,
-                    lineTension: 0,
-                    backgroundColor: "rgba(255,0,0,1.0)",
-                    borderColor: "rgba(255,0,0,0.1)",
-                    data: yValues_jit
-                }]
-            },
-            options: {
-                plugins: {
-                    legend: { display: false },
-                    title: {
-                        display: false,
-                    }
-                }
-
-            }
-        });
-
         function addData(chart, label, newDataArray) {
             chart.data.labels.push(label);
 
             chart.data.datasets.forEach((dataset, index) => {
                 dataset.data.push(newDataArray[index]);
+            });
+
+            chart.update();
+        }
+
+        function removeData(chart) {
+            chart.data.labels.shift();
+
+            chart.data.datasets.forEach((dataset) => {
+                dataset.data.shift();
             });
 
             chart.update();
@@ -103,26 +76,71 @@
 
         async function testar() {
 
+            const xValues = [];
+            const yValues_rtt = [];
+            const yValues_jit = [];
+
+            var ctx = document.getElementById('myChart');
+
+            var CoolChart = new Chart(ctx, {
+                type: "line",
+                data: {
+                    labels: xValues,
+
+                    datasets: [{
+                        fill: false,
+                        lineTension: 0,
+                        backgroundColor: "rgba(0,0,255,1.0)",
+                        borderColor: "rgba(0,0,255,0.1)",
+                        data: yValues_rtt
+                    }, {
+                        fill: false,
+                        lineTension: 0,
+                        backgroundColor: "rgba(255,0,0,1.0)",
+                        borderColor: "rgba(255,0,0,0.1)",
+                        data: yValues_jit
+                    }]
+                },
+                options: {
+                    plugins: {
+                        legend: { display: false },
+                        title: {
+                            display: false,
+                        }
+                    }
+
+                }
+            });
+
             const host = document.getElementById("host").value.trim();
 
             if (!host) {
                 alert("Informe um IP ou hostname.");
                 return;
             }
+            
 
             let perda_pacotes = 0
             let total_pacotes = 0
             let last_diff = 0
             let soma_ping = 0
             let media_ping = 0
-            let perda_percentual
+            let perda_percentual = 0
             let dados
 
             while (true) {
 
+                if (xValues.length == 20){
+                    removeData(CoolChart)
+                }
 
                 try {
                     total_pacotes = total_pacotes + 1
+                    
+                    perda_percentual = perda_pacotes / total_pacotes * 100
+                    perda_percentual = Math.round(perda_percentual)
+                    document.getElementById('perda').innerHTML = perda_percentual;
+
 
                     const resposta = await fetch(`/ping/${encodeURIComponent(host)}`);
 
@@ -130,6 +148,11 @@
                         perda_pacotes = perda_pacotes + 1
                         last_diff = 0
                         dados = 0
+
+                        media_ping = soma_ping / total_pacotes
+                        media_ping = media_ping.toFixed(2)
+                        document.getElementById('rtt').innerHTML = media_ping;
+
                         await addData(CoolChart, total_pacotes, [0, last_diff]);
 
                         throw new Error(`O servidor retornou status ${resposta.status}`);
@@ -141,28 +164,36 @@
                         perda_pacotes = perda_pacotes + 1
                         dados.rtt_ms = 0
                         last_diff = 0
+
+                        media_ping = soma_ping / total_pacotes
+                        media_ping = media_ping.toFixed(2)
+                        document.getElementById('rtt').innerHTML = media_ping;
+
                         await addData(CoolChart, total_pacotes, [0, last_diff]);
 
                         throw new Error(`TimedOut`);
                     }
-                    soma_ping = soma_ping + dados.diff_ms / 1000
+                    
+                    soma_ping = soma_ping + dados.rtt_ms
+
+                    if (xValues.length == 0){
+                        last_diff = dados.diff_ms
+                    }
                     let jitter = Math.abs((dados.diff_ms - last_diff)) / 1000
 
                     document.getElementById('jitter').innerHTML = jitter;
 
                     last_diff = dados.diff_ms
-
+                    
                     media_ping = soma_ping / total_pacotes
+                    media_ping = media_ping.toFixed(2)  
                     document.getElementById('rtt').innerHTML = media_ping;
+
                     await addData(CoolChart, total_pacotes, [dados.rtt_ms, jitter]);
-
-                    perda_percentual = perda_pacotes / total_pacotes * 100
-                    document.getElementById('perda').innerHTML = perda_percentual;
-
                 } catch (erro) {
                     document.getElementById("resultado").textContent = "Falha na requisição: " + erro.message;
                 }
-                console.log(dados.rtt_ms)
+                
                 await sleep(3000);
 
             }
