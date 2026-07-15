@@ -21,10 +21,10 @@
     <div id="CaixText">
         <input type="text" id="host" placeholder="Digite um IP ou hostname" value="8.8.8.8">
 
-        <button onclick="testar()">Ping</button>
+        <button onclick="Tabela()">Ping</button>
     </div>
-    <!-- Este DIV recebera o grafico e o div com os outros dados-->
     <div id="container-bg">
+        <!-- Este DIV recebera o grafico e o div com os outros dados
         <div id="Graficos">
             <canvas id="myChart" style="width:100%;max-width:600px"></canvas>
         </div>
@@ -45,11 +45,44 @@
                 <p id="perda"></p>
             </div>
 
-        </div>
-
+        </div>-->
     </div>
 
     <script>
+        var contador = 0;
+
+        function Tabela(){
+            const container = document.getElementById('container-bg');
+            const novoConteudo = `
+                <div id="sessao-${contador}" style="margin-bottom: 30px; border-bottom: 1px solid #ccc; padding-bottom: 10px;">
+                    <div id="Graficos-${contador}">
+                        <p>${document.getElementById("host").value.trim()}</p>
+                        <canvas id="myChart${contador}" style="width:100%;max-width:600px;"></canvas>
+                    </div>
+
+                    <div id="Dados-${contador}">
+                        <div class="caixa">
+                            <p>Tempo de resposta media :</p>
+                            <p id="rtt-${contador}"></p>
+                        </div>
+                        <div class="caixa">
+                            <p> Jitter :</p>
+                            <p id="jitter-${contador}"></p>
+                        </div>
+                        <div class="caixa">
+                            <p>Perda percentual de pacotes: </p>
+                            <p id="perda-${contador}"></p>
+                        </div>
+                    </div>
+                </div>
+            `;
+            container.insertAdjacentHTML('beforeend', novoConteudo);
+
+            testar(contador)
+
+            contador++
+        }
+        
         function addData(chart, label, newDataArray) {
             chart.data.labels.push(label);
 
@@ -74,13 +107,18 @@
             return new Promise(resolve => setTimeout(resolve, ms));
         }
 
-        async function testar() {
-
+        async function testar(contador) {
+            
             const xValues = [];
             const yValues_rtt = [];
             const yValues_jit = [];
 
-            var ctx = document.getElementById('myChart');
+            const chartname = 'myChart' + contador
+            const perdaname = 'perda-' + contador
+            const rttname = 'rtt-' + contador
+            const jittername = 'jitter-' + contador
+
+            var ctx = document.getElementById(chartname);
 
             var CoolChart = new Chart(ctx, {
                 type: "line",
@@ -102,6 +140,7 @@
                     }]
                 },
                 options: {
+                    maintainAspectRatio: true,
                     plugins: {
                         legend: { display: false },
                         title: {
@@ -139,7 +178,7 @@
                     
                     perda_percentual = perda_pacotes / total_pacotes * 100
                     perda_percentual = Math.round(perda_percentual)
-                    document.getElementById('perda').innerHTML = perda_percentual;
+                    document.getElementById(perdaname).innerHTML = perda_percentual + '%';
 
 
                     const resposta = await fetch(`/ping/${encodeURIComponent(host)}`);
@@ -151,7 +190,7 @@
 
                         media_ping = soma_ping / total_pacotes
                         media_ping = media_ping.toFixed(2)
-                        document.getElementById('rtt').innerHTML = media_ping;
+                        document.getElementById(rttname).innerHTML = media_ping + ' ms';
 
                         await addData(CoolChart, total_pacotes, [0, last_diff]);
 
@@ -167,7 +206,7 @@
 
                         media_ping = soma_ping / total_pacotes
                         media_ping = media_ping.toFixed(2)
-                        document.getElementById('rtt').innerHTML = media_ping;
+                        document.getElementById(rttname).innerHTML = media_ping + ' ms';
 
                         await addData(CoolChart, total_pacotes, [0, last_diff]);
 
@@ -181,13 +220,13 @@
                     }
                     let jitter = Math.abs((dados.diff_ms - last_diff)) / 1000
 
-                    document.getElementById('jitter').innerHTML = jitter;
+                    document.getElementById(jittername).innerHTML = jitter + ' ms';
 
                     last_diff = dados.diff_ms
                     
                     media_ping = soma_ping / total_pacotes
-                    media_ping = media_ping.toFixed(2)  
-                    document.getElementById('rtt').innerHTML = media_ping;
+                    media_ping = media_ping.toFixed(2)
+                    document.getElementById(rttname).innerHTML = media_ping + ' ms';
 
                     await addData(CoolChart, total_pacotes, [dados.rtt_ms, jitter]);
                 } catch (erro) {
