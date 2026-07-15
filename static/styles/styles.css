@@ -1,18 +1,202 @@
-#container-bg{
-    display: flex;
-    justify-content:space-evenly;
-    align-items: center;
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
 }
 
-#Dados{
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    background: #eef2f7;
+    color: #333;
+    min-height: 100vh;
+}
+
+header {
+    background: #4E9D30;
+    color: white;
+    padding: 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,.2);
+}
+
+header h2 {
+    font-size: 28px;
+    font-weight: bold;
+}
+
+#CaixText {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 15px;
+
+    margin: 30px auto;
+}
+
+#host {
+    width: 320px;
+    padding: 12px 15px;
+
+    border: 1px solid #ccc;
+    border-radius: 8px;
+
+    font-size: 16px;
+
+    outline: none;
+    transition: .2s;
+}
+
+#host:focus {
+    border-color: #4E9D30;
+    box-shadow: 0 0 8px rgba(37,99,235,.3);
+}
+
+button {
+    padding: 12px 24px;
+
+    border: none;
+    border-radius: 8px;
+
+    background: #4E9D30;
+    color: white;
+
+    font-size: 16px;
+    cursor: pointer;
+
+    transition: .2s;
+}
+
+button:hover {
+    background: rgb(108, 187, 78);
+    transform: translateY(-2px);
+}
+
+#container-bg {
+
+    width: 95%;
+    max-width: 1200px;
+
+    margin: auto;
+
+    display: flex;
+    flex-wrap: wrap;
+
+    justify-content: center;
+    align-items: flex-start;
+
+    gap: 30px;
+
+    background: white;
+
+    padding: 25px;
+
+    border-radius: 12px;
+
+    box-shadow: 0 10px 25px rgba(0,0,0,.1);
+}
+
+canvas {
+    flex: 2;
+    min-width: 500px;
+    max-width: 700px;
+}
+
+#Dados {
+
     display: flex;
     flex-direction: column;
-    justify-content: space-evenly;
+
+    gap: 20px;
+
+    width: 250px;
 }
 
-#Caixa {
-    border: 1px solid black;
+.caixa {
+
+    background: #f8fafc;
+
+    border-left: 6px solid #A6192E;
+
+    border-radius: 10px;
+
+    padding: 18px;
+
+    box-shadow: 0 5px 12px rgba(0,0,0,.08);
+
+    transition: .2s;
+}
+
+.caixa:hover {
+    transform: scale(1.03);
+}
+
+.caixa p:first-child {
+    font-size: 14px;
+    color: #555;
+}
+
+.caixa p:last-child {
+
+    margin-top: 10px;
+
+    font-size: 26px;
+
+    font-weight: bold;
+
+    color: #A6192E;
+}
+
+#resultado {
+
+    width: 95%;
+    max-width: 1200px;
+
+    margin: 20px auto;
+
+    padding: 15px;
+
+    background: #111827;
+
+    color: #4ade80;
+
     border-radius: 8px;
-    padding-inline: 0;
-    padding: 1rem;
+
+    min-height: 40px;
+
+    overflow-x: auto;
+}
+
+/* ===========================
+   RESPONSIVO
+=========================== */
+
+@media (max-width: 900px) {
+
+    #container-bg {
+
+        flex-direction: column;
+
+        align-items: center;
+    }
+
+    canvas {
+        min-width: 100%;
+    }
+
+    #Dados {
+        width: 100%;
+    }
+
+    #CaixText {
+
+        flex-direction: column;
+    }
+
+    #host {
+        width: 100%;
+    }
+
+    button {
+        width: 100%;
+    }
+
 }
