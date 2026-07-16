@@ -3,7 +3,8 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>App para verificação de Rede</title>
+    <title>Monitoramento via Ping</title>
+    <link rel="icon" type="image/x-icon" href="{{ url_for('static',filename='images/LogoIFB.png') }}">    
     <link rel="stylesheet" href="{{ url_for('static',filename='styles/styles.css') }}">
 </head>
 
@@ -11,7 +12,7 @@
 
 <body>
     <header>
-        <h2 style="text-align:center;">Manutenção de Ping</h2>
+        <h2 style="text-align:center;">Monitoramento via Ping</h2>
 
 
     </header>
@@ -19,8 +20,8 @@
     <pre id="resultado"></pre>
 
     <div id="CaixText">
-        <input type="text" id="host" placeholder="Digite um IP ou hostname" value="8.8.8.8">
-
+        <input type="text" id="host" placeholder="Digite um IP ou hostname">
+        <input type="number" id="temporizador" placeholder="ms" value="500">
         <button onclick="Tabela()">Ping</button>
     </div>
     <div id="container-bg">
@@ -80,29 +81,54 @@
             const novoConteudo = `
                 <div id="sessao-${contador}" class="sessao">
                     <div class="grafico">
-                        <p style = 'color: #231F20; text-align: center; font-weight: 900;'>${document.getElementById("host").value.trim()}</p>
+                        <p style = 'color: #231F20; text-align: center; font-weight: 900;'>
+                            ${document.getElementById("host").value.trim()}
+                             - 
+                            ${document.getElementById("temporizador").value.trim()}  
+                             ms  
+                        </p>
                         <canvas id="myChart${contador}"></canvas>
 
                     </div>
 
                     <div class="dados">
 
-                        <div class="caixa">
-                            <p style = 'color: #231F20; text-align: center; font-weight: 900;'>Tempo médio</p>
+                        <div class="caixa" style = 'border-left: 6px solid #4E9D30'>
+                            <p style = 'color: #231F20; text-align: center; font-weight: 900;'>Latência:</p>
+                            <p id="rttUltimo-${contador}" style = 'color: #231F20; text-align: center; font-weight: 900;'></p>
+                        </div>
+
+                        <div class="caixa" style = 'border-left: 6px solid #4E9D30'>
+                            <p style = 'color: #231F20; text-align: center; font-weight: 900;'>Latência Média:</p>
                             <p id="rtt-${contador}" style = 'color: #231F20; text-align: center; font-weight: 900;'></p>
                         </div>
 
                         <div class="caixa">
-                            <p style = 'color: #231F20; text-align: center; font-weight: 900;'>Jitter</p>
+                            <p style = 'color: #231F20; text-align: center; font-weight: 900;'>Jitter:</p>
                             <p id="jitter-${contador}" style = 'color: #231F20; text-align: center; font-weight: 900;'></p>
                         </div>
 
                         <div class="caixa">
-                            <p style = 'color: #231F20; text-align: center; font-weight: 900;'>Perda</p>
+                            <p style = 'color: #231F20; text-align: center; font-weight: 900;'>Jitter Médio:</p>
+                            <p id="jitterMedio-${contador}" style = 'color: #231F20; text-align: center; font-weight: 900;'></p>
+                        </div>
+
+                        <div class="caixa" style = 'border-left: 6px solid #231F20'>
+                            <p style = 'color: #231F20; text-align: center; font-weight: 900;'>Total de Pacotes</p>
+                            <p id="pacotesTotal-${contador}" style = 'color: #231F20; text-align: center; font-weight: 900;'></p>
+                        </div>
+
+                        <div class="caixa" style = 'border-left: 6px solid #231F20'>
+                            <p style = 'color: #231F20; text-align: center; font-weight: 900;'>Pacotes Perdidos</p>
+                            <p id="pacotesPerdidos-${contador}" style = 'color: #231F20; text-align: center; font-weight: 900;'></p>
+                        </div>
+
+                        <div class="caixa" style = 'border-left: 6px solid #231F20'>
+                            <p style = 'color: #231F20; text-align: center; font-weight: 900;'>Perda Percentual</p>
                             <p id="perda-${contador}" style = 'color: #231F20; text-align: center; font-weight: 900;'></p>
                         </div>
 
-                                            <div class="botoes">
+                            <div class="botoes">
 
                             <button id="btn-${contador}" onclick="alternarPesquisa(${contador})">
                                 Parar
@@ -161,7 +187,11 @@
             const chartname = 'myChart' + contador
             const perdaname = 'perda-' + contador
             const rttname = 'rtt-' + contador
+            const rttUltimoname = 'rttUltimo-' + contador
             const jittername = 'jitter-' + contador
+            const jitterMedioname = "jitterMedio-" + contador
+            const pacotesTotalname = "pacotesTotal-" + contador
+            const pacotesPerdidosname = "pacotesPerdidos-" + contador
 
             var ctx = document.getElementById(chartname);
 
@@ -171,7 +201,7 @@
                     labels: xValues,
 
                     datasets: [{
-                        label: 'Ping',
+                        label: 'Latência',
                         fill: false,
                         lineTension: 0,
                         backgroundColor: "rgba(80,158,47,1.0)",
@@ -199,7 +229,7 @@
             });
 
             const host = document.getElementById("host").value.trim();
-
+            const tempo = document.getElementById("temporizador").value;
             if (!host) {
                 alert("Informe um IP ou hostname.");
                 return;
@@ -210,7 +240,10 @@
             let total_pacotes = 0
             let last_diff = 0
             let soma_ping = 0
+            let soma_jitter = 0
+            let media_jitter = 0
             let media_ping = 0
+            let pingUltimo = 0
             let perda_percentual = 0
             let dados
 
@@ -233,7 +266,9 @@
                     total_pacotes = total_pacotes + 1
 
                     perda_percentual = perda_pacotes / total_pacotes * 100
-                    perda_percentual = Math.round(perda_percentual)
+                    perda_percentual = perda_percentual.toFixed(2)
+                    document.getElementById(pacotesTotalname).innerHTML = total_pacotes;
+                    document.getElementById(pacotesPerdidosname).innerHTML = perda_pacotes;
                     document.getElementById(perdaname).innerHTML = perda_percentual + '%';
 
 
@@ -246,7 +281,10 @@
 
                         media_ping = soma_ping / total_pacotes
                         media_ping = media_ping.toFixed(2)
+                        pingUltimo = dados.rtt_ms
+                        pingUltimo = pingUltimo.toFixed(2)
                         document.getElementById(rttname).innerHTML = media_ping + ' ms';
+                        document.getElementById(rttUltimoname).innerHTML = pingUltimo + ' ms';
 
                         await addData(CoolChart, total_pacotes, [0, last_diff]);
 
@@ -262,7 +300,10 @@
 
                         media_ping = soma_ping / total_pacotes
                         media_ping = media_ping.toFixed(2)
+                        pingUltimo = dados.rtt_ms
+                        pingUltimo = pingUltimo.toFixed(2)
                         document.getElementById(rttname).innerHTML = media_ping + ' ms';
+                        document.getElementById(rttUltimoname).innerHTML = pingUltimo + ' ms';
 
                         await addData(CoolChart, total_pacotes, [0, last_diff]);
 
@@ -272,29 +313,50 @@
                     soma_ping = soma_ping + dados.rtt_ms
 
                     if (xValues.length == 0) {
-                        last_diff = dados.diff_ms
+                        last_diff = dados.rtt_ms
                     }
-                    let jitter = Math.abs((dados.diff_ms - last_diff)) / 1000
-                    let jitterGrafico = Math.min(jitter, 50)
+                    let jitter = Math.abs((dados.rtt_ms - last_diff))
+                    soma_jitter = soma_jitter + jitter;
 
+                    jitter = jitter.toFixed(2)
+                    media_jitter = soma_jitter / total_pacotes
+                    media_jitter = media_jitter.toFixed(2)
                     document.getElementById(jittername).innerHTML = jitter + ' ms';
+                    document.getElementById(jitterMedioname).innerHTML = media_jitter + ' ms';
 
-                    last_diff = dados.diff_ms
+                    last_diff = dados.rtt_ms
 
                     media_ping = soma_ping / total_pacotes
                     media_ping = media_ping.toFixed(2)
+                    pingUltimo = dados.rtt_ms
+                    pingUltimo = pingUltimo.toFixed(2)
                     document.getElementById(rttname).innerHTML = media_ping + ' ms';
+                    document.getElementById(rttUltimoname).innerHTML = pingUltimo + ' ms';
 
-                    await addData(CoolChart, total_pacotes, [dados.rtt_ms, jitterGrafico]);
+                    await addData(CoolChart, total_pacotes, [dados.rtt_ms, jitter]);
                 } catch (erro) {
                     document.getElementById("resultado").textContent = "Falha na requisição: " + erro.message;
                 }
 
-                await sleep(3000);
+                await sleep(tempo);
 
             }
         }
     </script>
 </body>
+
+<footer>
+    <div style="display: flex; justify-content: center; position: relative;
+    height: 100px; bottom: 70%;">
+        <div style="margin-top: 20px; border: 1px black; border-style: solid none none none;
+        text-align:center; width: 60%;">
+            <p style="margin-top: 10px;">
+            Feito por: Arthur Carlos Neuhauss & Thiago Vinicius da Silva Rezende
+            <br>
+            Estudantes do Instituto Federal de Brasília
+            </p>
+        </div>
+    </div>
+</footer>
 
 </html>

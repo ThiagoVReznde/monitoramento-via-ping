@@ -23,17 +23,12 @@ def index():
 def ping(host):
     import datetime
 
-    sent_time = datetime.datetime.now()
     tempo = ping3.ping(host)
-    received_time = datetime.datetime.now()
-
-    delta = sent_time - received_time
 
     return jsonify({
         "host": host,
         "alive": tempo is not None,
         "rtt_ms": tempo * 1000 if tempo else None,
-        "diff_ms": delta.microseconds if tempo else None
     })
 
 if __name__ == "__main__":
