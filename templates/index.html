@@ -24,56 +24,97 @@
         <button onclick="Tabela()">Ping</button>
     </div>
     <div id="container-bg">
-        <!-- Este DIV recebera o grafico e o div com os outros dados
-        <div id="Graficos">
-            <canvas id="myChart" style="width:100%;max-width:600px"></canvas>
-        </div>
-
-        <div id="Dados">
-            <div class="caixa">
-                <p>RTT medio :</p>
-                <p id="rtt"></p>
-            </div>
-
-            <div class="caixa">
-                <p> Jitter :</p>
-                <p id="jitter"></p>
-            </div>
-
-            <div class="caixa">
-                <p>Perda % de pacotes: </p>
-                <p id="perda"></p>
-            </div>
-
-        </div>-->
     </div>
 
     <script>
         var contador = 0;
+        const pesquisas = {};
 
-        function Tabela(){
+        function alternarPesquisa(id) {
+
+            const pesquisa = pesquisas[id];
+
+            if (!pesquisa) return;
+
+            const botao = document.getElementById(`btn-${id}`);
+            const excluir = document.getElementById(`excluir-${id}`);
+
+            if (pesquisa.executando) {
+
+                pesquisa.executando = false;
+
+                botao.innerHTML = "Continuar";
+                excluir.style.display = "inline-block";
+
+            } else {
+
+                pesquisa.executando = true;
+
+                botao.innerHTML = "Parar";
+                excluir.style.display = "none";
+            }
+        }
+
+        function excluirPesquisa(id) {
+
+            delete pesquisas[id];
+
+            document.getElementById(`sessao-${id}`).remove();
+        }
+
+        function pararPesquisa(id) {
+            pesquisas[id] = false;
+
+            const botao = document.querySelector(
+                `#sessao-${id} button`
+            );
+
+            if (botao) {
+                botao.innerText = "Parado";
+                botao.disabled = true;
+            }
+        }
+
+        function Tabela() {
             const container = document.getElementById('container-bg');
             const novoConteudo = `
-                <div id="sessao-${contador}" style="margin-bottom: 30px; border-bottom: 1px solid #ccc; padding-bottom: 10px;">
-                    <div id="Graficos-${contador}">
-                        <p>${document.getElementById("host").value.trim()}</p>
-                        <canvas id="myChart${contador}" style="width:100%;max-width:600px;"></canvas>
+                <div id="sessao-${contador}" class="sessao">
+                    <div class="grafico">
+                        <p style = 'color: #231F20; text-align: center; font-weight: 900;'>${document.getElementById("host").value.trim()}</p>
+                        <canvas id="myChart${contador}"></canvas>
+
                     </div>
 
-                    <div id="Dados-${contador}">
+                    <div class="dados">
+
                         <div class="caixa">
-                            <p>Tempo de resposta media :</p>
-                            <p id="rtt-${contador}"></p>
+                            <p style = 'color: #231F20; text-align: center; font-weight: 900;'>Tempo médio</p>
+                            <p id="rtt-${contador}" style = 'color: #231F20; text-align: center; font-weight: 900;'></p>
                         </div>
+
                         <div class="caixa">
-                            <p> Jitter :</p>
-                            <p id="jitter-${contador}"></p>
+                            <p style = 'color: #231F20; text-align: center; font-weight: 900;'>Jitter</p>
+                            <p id="jitter-${contador}" style = 'color: #231F20; text-align: center; font-weight: 900;'></p>
                         </div>
+
                         <div class="caixa">
-                            <p>Perda percentual de pacotes: </p>
-                            <p id="perda-${contador}"></p>
+                            <p style = 'color: #231F20; text-align: center; font-weight: 900;'>Perda</p>
+                            <p id="perda-${contador}" style = 'color: #231F20; text-align: center; font-weight: 900;'></p>
                         </div>
+
+                                            <div class="botoes">
+
+                            <button id="btn-${contador}" onclick="alternarPesquisa(${contador})">
+                                Parar
+                            </button>
+
+                            <button id="excluir-${contador}" onclick="excluirPesquisa(${contador})" style="display:none;background:#A6192E;">
+                                Excluir
+                            </button>
+
                     </div>
+                    </div>
+
                 </div>
             `;
             container.insertAdjacentHTML('beforeend', novoConteudo);
@@ -82,7 +123,7 @@
 
             contador++
         }
-        
+
         function addData(chart, label, newDataArray) {
             chart.data.labels.push(label);
 
@@ -108,7 +149,11 @@
         }
 
         async function testar(contador) {
-            
+
+            pesquisas[contador] = {
+                executando: true
+            };
+
             const xValues = [];
             const yValues_rtt = [];
             const yValues_jit = [];
@@ -126,23 +171,25 @@
                     labels: xValues,
 
                     datasets: [{
+                        label: 'Ping',
                         fill: false,
                         lineTension: 0,
-                        backgroundColor: "rgba(0,0,255,1.0)",
-                        borderColor: "rgba(0,0,255,0.1)",
+                        backgroundColor: "rgba(80,158,47,1.0)",
+                        borderColor: "rgba(80,158,47,1.0)",
                         data: yValues_rtt
                     }, {
+                        label: 'Jitter',
                         fill: false,
                         lineTension: 0,
-                        backgroundColor: "rgba(255,0,0,1.0)",
-                        borderColor: "rgba(255,0,0,0.1)",
+                        backgroundColor: "rgba(166,25,46,1.0)",
+                        borderColor: "rgba(166,25,46,1.0)",
                         data: yValues_jit
                     }]
                 },
                 options: {
                     maintainAspectRatio: true,
                     plugins: {
-                        legend: { display: false },
+                        legend: { display: true },
                         title: {
                             display: false,
                         }
@@ -157,7 +204,7 @@
                 alert("Informe um IP ou hostname.");
                 return;
             }
-            
+
 
             let perda_pacotes = 0
             let total_pacotes = 0
@@ -169,13 +216,22 @@
 
             while (true) {
 
-                if (xValues.length == 20){
+                if (!pesquisas[contador]) {
+                    break;
+                }
+
+                if (!pesquisas[contador].executando) {
+                    await sleep(300);
+                    continue;
+                }
+
+                if (xValues.length == 20) {
                     removeData(CoolChart)
                 }
 
                 try {
                     total_pacotes = total_pacotes + 1
-                    
+
                     perda_percentual = perda_pacotes / total_pacotes * 100
                     perda_percentual = Math.round(perda_percentual)
                     document.getElementById(perdaname).innerHTML = perda_percentual + '%';
@@ -212,27 +268,28 @@
 
                         throw new Error(`TimedOut`);
                     }
-                    
+
                     soma_ping = soma_ping + dados.rtt_ms
 
-                    if (xValues.length == 0){
+                    if (xValues.length == 0) {
                         last_diff = dados.diff_ms
                     }
                     let jitter = Math.abs((dados.diff_ms - last_diff)) / 1000
+                    let jitterGrafico = Math.min(jitter, 50)
 
                     document.getElementById(jittername).innerHTML = jitter + ' ms';
 
                     last_diff = dados.diff_ms
-                    
+
                     media_ping = soma_ping / total_pacotes
                     media_ping = media_ping.toFixed(2)
                     document.getElementById(rttname).innerHTML = media_ping + ' ms';
 
-                    await addData(CoolChart, total_pacotes, [dados.rtt_ms, jitter]);
+                    await addData(CoolChart, total_pacotes, [dados.rtt_ms, jitterGrafico]);
                 } catch (erro) {
                     document.getElementById("resultado").textContent = "Falha na requisição: " + erro.message;
                 }
-                
+
                 await sleep(3000);
 
             }

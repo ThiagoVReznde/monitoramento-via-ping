@@ -15,12 +15,18 @@ header {
     background: #4E9D30;
     color: white;
     padding: 20px;
-    box-shadow: 0 2px 8px rgba(0,0,0,.2);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, .2);
 }
 
 header h2 {
     font-size: 28px;
     font-weight: bold;
+}
+
+p {
+    color: #231F20;
+    text-align: center;
+    font-weight: 900;
 }
 
 #CaixText {
@@ -47,7 +53,7 @@ header h2 {
 
 #host:focus {
     border-color: #4E9D30;
-    box-shadow: 0 0 8px rgba(37,99,235,.3);
+    box-shadow: 0 0 8px rgba(37, 99, 235, .3);
 }
 
 button {
@@ -91,7 +97,7 @@ button:hover {
 
     border-radius: 12px;
 
-    box-shadow: 0 10px 25px rgba(0,0,0,.1);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, .1);
 }
 
 canvas {
@@ -100,17 +106,8 @@ canvas {
     max-width: 700px;
 }
 
-#Dados {
-
-    display: flex;
-    flex-direction: column;
-
-    gap: 20px;
-
-    width: 250px;
-}
-
 .caixa {
+
 
     background: #f8fafc;
 
@@ -120,7 +117,7 @@ canvas {
 
     padding: 18px;
 
-    box-shadow: 0 5px 12px rgba(0,0,0,.08);
+    box-shadow: 0 5px 12px rgba(0, 0, 0, .08);
 
     transition: .2s;
 }
@@ -156,13 +153,67 @@ canvas {
 
     background: #111827;
 
-    color: #4ade80;
+    color: #ffffff;
 
     border-radius: 8px;
 
     min-height: 40px;
 
     overflow-x: auto;
+}
+
+.sessao {
+
+    display: flex;
+
+    align-items: flex-start;
+
+    justify-content: space-between;
+
+    gap: 30px;
+
+    width: 100%;
+
+    margin-bottom: 35px;
+
+    padding-bottom: 25px;
+
+    border-bottom: 1px solid #dcdcdc;
+}
+
+
+.grafico {
+
+    flex: 1;
+
+    min-width: 600px;
+}
+
+.grafico canvas {
+
+    width: 100% !important;
+
+    max-width: 700px;
+}
+
+.dados {
+
+    width: 240px;
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 20px;
+}
+
+.botoes {
+
+    display: flex;
+
+    gap: 10px;
+
+    margin: 10px 0 20px;
 }
 
 /* ===========================
@@ -182,10 +233,6 @@ canvas {
         min-width: 100%;
     }
 
-    #Dados {
-        width: 100%;
-    }
-
     #CaixText {
 
         flex-direction: column;
@@ -196,6 +243,21 @@ canvas {
     }
 
     button {
+        width: 100%;
+    }
+
+    .sessao {
+
+        flex-direction: column;
+    }
+
+    .grafico {
+
+        min-width: 100%;
+    }
+
+    .dados {
+
         width: 100%;
     }
 
