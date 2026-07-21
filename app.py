@@ -21,14 +21,22 @@ def index():
 
 @app.route("/ping/<host>")
 def ping(host):
-    import datetime
+    try:
+        tempo = ping3.ping(host, timeout=0.5)
+    except Exception:
+        tempo = None
 
-    tempo = ping3.ping(host)
+    if tempo is None:
+        return jsonify({
+            "host": host,
+            "alive": False,
+            "rtt_ms": None
+        }), 404
 
     return jsonify({
         "host": host,
-        "alive": tempo is not None,
-        "rtt_ms": tempo * 1000 if tempo else None,
+        "alive": True,
+        "rtt_ms": tempo * 1000
     })
 
 if __name__ == "__main__":
