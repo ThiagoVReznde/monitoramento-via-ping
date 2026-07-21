@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Monitoramento via Ping</title>
-    <link rel="icon" type="image/x-icon" href="{{ url_for('static',filename='images/LogoIFB.png') }}">    
+    <link rel="icon" type="image/x-icon" href="{{ url_for('static',filename='images/LogoIFB.png') }}">
     <link rel="stylesheet" href="{{ url_for('static',filename='styles/styles.css') }}">
 </head>
 
@@ -61,19 +61,6 @@
             delete pesquisas[id];
 
             document.getElementById(`sessao-${id}`).remove();
-        }
-
-        function pararPesquisa(id) {
-            pesquisas[id] = false;
-
-            const botao = document.querySelector(
-                `#sessao-${id} button`
-            );
-
-            if (botao) {
-                botao.innerText = "Parado";
-                botao.disabled = true;
-            }
         }
 
         function Tabela() {
@@ -143,6 +130,13 @@
 
                 </div>
             `;
+
+            const host = document.getElementById("host").value.trim();
+            if (!host) {
+                alert("Informe um IP ou hostname.");
+                return
+            }
+
             container.insertAdjacentHTML('beforeend', novoConteudo);
 
             testar(contador)
@@ -230,11 +224,6 @@
 
             const host = document.getElementById("host").value.trim();
             const tempo = document.getElementById("temporizador").value;
-            if (!host) {
-                alert("Informe um IP ou hostname.");
-                return;
-            }
-
 
             let perda_pacotes = 0
             let total_pacotes = 0
@@ -265,28 +254,48 @@
                 try {
                     total_pacotes = total_pacotes + 1
 
-                    perda_percentual = perda_pacotes / total_pacotes * 100
-                    perda_percentual = perda_percentual.toFixed(2)
-                    document.getElementById(pacotesTotalname).innerHTML = total_pacotes;
-                    document.getElementById(pacotesPerdidosname).innerHTML = perda_pacotes;
-                    document.getElementById(perdaname).innerHTML = perda_percentual + '%';
-
-
                     const resposta = await fetch(`/ping/${encodeURIComponent(host)}`);
 
                     if (!resposta.ok) {
                         perda_pacotes = perda_pacotes + 1
+                        dados = {
+                            rtt_ms: 0
+                        };
                         last_diff = 0
-                        dados = 0
 
-                        media_ping = soma_ping / total_pacotes
+                        media_ping =
+                            total_pacotes > 0
+                                ? soma_ping / total_pacotes
+                                : 0;
                         media_ping = media_ping.toFixed(2)
                         pingUltimo = dados.rtt_ms
                         pingUltimo = pingUltimo.toFixed(2)
+
+                        if (xValues.length == 0) {
+                            last_diff = dados.rtt_ms
+                        }
+
+                        let jitter = Math.abs((dados.rtt_ms - last_diff))
+                        soma_jitter = soma_jitter + jitter;
+                        jitter = jitter.toFixed(2)
+                        media_jitter =
+                            total_pacotes > 0
+                                ? soma_jitter / total_pacotes
+                                : 0;
+                        media_jitter = media_jitter.toFixed(2)
+
+                        perda_percentual = perda_pacotes / total_pacotes * 100
+                        perda_percentual = perda_percentual.toFixed(2)
+
+                        addData(CoolChart, total_pacotes, [0, last_diff]);
+
                         document.getElementById(rttname).innerHTML = media_ping + ' ms';
                         document.getElementById(rttUltimoname).innerHTML = pingUltimo + ' ms';
-
-                        await addData(CoolChart, total_pacotes, [0, last_diff]);
+                        document.getElementById(jittername).innerHTML = jitter + ' ms';
+                        document.getElementById(jitterMedioname).innerHTML = media_jitter + ' ms';
+                        document.getElementById(pacotesTotalname).innerHTML = total_pacotes;
+                        document.getElementById(pacotesPerdidosname).innerHTML = perda_pacotes;
+                        document.getElementById(perdaname).innerHTML = perda_percentual + '%';
 
                         throw new Error(`O servidor retornou status ${resposta.status}`);
                     }
@@ -295,18 +304,43 @@
 
                     if (dados.rtt_ms == null) {
                         perda_pacotes = perda_pacotes + 1
-                        dados.rtt_ms = 0
+                        dados = {
+                            rtt_ms: 0
+                        };
                         last_diff = 0
 
-                        media_ping = soma_ping / total_pacotes
+                        media_ping =
+                            total_pacotes > 0
+                                ? soma_ping / total_pacotes
+                                : 0;
                         media_ping = media_ping.toFixed(2)
                         pingUltimo = dados.rtt_ms
                         pingUltimo = pingUltimo.toFixed(2)
+
+                        if (xValues.length == 0) {
+                            last_diff = dados.rtt_ms
+                        }
+                        let jitter = Math.abs((dados.rtt_ms - last_diff))
+                        soma_jitter = soma_jitter + jitter;
+
+                        jitter = jitter.toFixed(2)
+                        media_jitter =
+                            total_pacotes > 0
+                                ? soma_jitter / total_pacotes
+                                : 0;
+                        media_jitter = media_jitter.toFixed(2)
+                        perda_percentual = perda_pacotes / total_pacotes * 100
+                        perda_percentual = perda_percentual.toFixed(2)
+
+                        addData(CoolChart, total_pacotes, [0, last_diff]);
+
                         document.getElementById(rttname).innerHTML = media_ping + ' ms';
                         document.getElementById(rttUltimoname).innerHTML = pingUltimo + ' ms';
-
-                        await addData(CoolChart, total_pacotes, [0, last_diff]);
-
+                        document.getElementById(jittername).innerHTML = jitter + ' ms';
+                        document.getElementById(jitterMedioname).innerHTML = media_jitter + ' ms';
+                        document.getElementById(pacotesTotalname).innerHTML = total_pacotes;
+                        document.getElementById(pacotesPerdidosname).innerHTML = perda_pacotes;
+                        document.getElementById(perdaname).innerHTML = perda_percentual + '%';
                         throw new Error(`TimedOut`);
                     }
 
@@ -315,25 +349,40 @@
                     if (xValues.length == 0) {
                         last_diff = dados.rtt_ms
                     }
+
                     let jitter = Math.abs((dados.rtt_ms - last_diff))
                     soma_jitter = soma_jitter + jitter;
 
                     jitter = jitter.toFixed(2)
-                    media_jitter = soma_jitter / total_pacotes
+                    media_jitter =
+                        total_pacotes > 0
+                            ? soma_jitter / total_pacotes
+                            : 0;
                     media_jitter = media_jitter.toFixed(2)
-                    document.getElementById(jittername).innerHTML = jitter + ' ms';
-                    document.getElementById(jitterMedioname).innerHTML = media_jitter + ' ms';
 
                     last_diff = dados.rtt_ms
 
-                    media_ping = soma_ping / total_pacotes
+                    media_ping =
+                        total_pacotes > 0
+                            ? soma_ping / total_pacotes
+                            : 0;
                     media_ping = media_ping.toFixed(2)
                     pingUltimo = dados.rtt_ms
                     pingUltimo = pingUltimo.toFixed(2)
+
+                    perda_percentual = perda_pacotes / total_pacotes * 100
+                    perda_percentual = perda_percentual.toFixed(2)
+
+                    addData(CoolChart, total_pacotes, [dados.rtt_ms, jitter]);
+
+                    document.getElementById(jittername).innerHTML = jitter + ' ms';
+                    document.getElementById(jitterMedioname).innerHTML = media_jitter + ' ms';
                     document.getElementById(rttname).innerHTML = media_ping + ' ms';
                     document.getElementById(rttUltimoname).innerHTML = pingUltimo + ' ms';
+                    document.getElementById(pacotesTotalname).innerHTML = total_pacotes;
+                    document.getElementById(pacotesPerdidosname).innerHTML = perda_pacotes;
+                    document.getElementById(perdaname).innerHTML = perda_percentual + '%';
 
-                    await addData(CoolChart, total_pacotes, [dados.rtt_ms, jitter]);
                 } catch (erro) {
                     document.getElementById("resultado").textContent = "Falha na requisição: " + erro.message;
                 }
@@ -351,9 +400,9 @@
         <div style="margin-top: 20px; border: 1px black; border-style: solid none none none;
         text-align:center; width: 60%;">
             <p style="margin-top: 10px;">
-            Feito por: Arthur Carlos Neuhauss & Thiago Vinicius da Silva Rezende
-            <br>
-            Estudantes do Instituto Federal de Brasília
+                Feito por: Arthur Carlos Neuhauss & Thiago Vinicius da Silva Rezende
+                <br>
+                Estudantes do Instituto Federal de Brasília
             </p>
         </div>
     </div>
