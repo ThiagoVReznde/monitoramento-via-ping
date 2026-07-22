@@ -92,23 +92,23 @@
 
                     <div class="dados">
 
-                        <div class="caixa" style = 'border-left: 6px solid #4E9D30'>
-                            <p style = 'color: #231F20; text-align: center; font-weight: 900;'>Latência:</p>
+                        <div class="caixa" id="Latencia-${contador}" style = 'border-left: 6px solid #4E9D30'>
+                            <p id="rtttitulo-${contador}" style = 'color: #231F20; text-align: center; font-weight: 900;'>Latência:</p>
                             <p id="rttUltimo-${contador}" style = 'color: #231F20; text-align: center; font-weight: 900;'></p>
                         </div>
 
-                        <div class="caixa" style = 'border-left: 6px solid #4E9D30'>
-                            <p style = 'color: #231F20; text-align: center; font-weight: 900;'>Latência Média:</p>
+                        <div class="caixa" id="LatenciaMedia-${contador}" style = 'border-left: 6px solid #4E9D30'>
+                            <p id="rttMedio-${contador}" style = 'color: #231F20; text-align: center; font-weight: 900;'>Latência Média:</p>
                             <p id="rtt-${contador}" style = 'color: #231F20; text-align: center; font-weight: 900;'></p>
                         </div>
 
-                        <div class="caixa">
-                            <p style = 'color: #231F20; text-align: center; font-weight: 900;'>Jitter:</p>
+                        <div class="caixa" id="Variacao-${contador}">
+                            <p id="VariacaoTitulo-${contador}" style = 'color: #231F20; text-align: center; font-weight: 900;'>Jitter:</p>
                             <p id="jitter-${contador}" style = 'color: #231F20; text-align: center; font-weight: 900;'></p>
                         </div>
 
-                        <div class="caixa">
-                            <p style = 'color: #231F20; text-align: center; font-weight: 900;'>Jitter Médio:</p>
+                        <div class="caixa" id="mediaVar-${contador}">
+                            <p id="varTitulo-${contador}" style = 'color: #231F20; text-align: center; font-weight: 900;'>Jitter Médio:</p>
                             <p id="jitterMedio-${contador}" style = 'color: #231F20; text-align: center; font-weight: 900;'></p>
                         </div>
 
@@ -122,8 +122,8 @@
                             <p id="pacotesPerdidos-${contador}" style = 'color: #231F20; text-align: center; font-weight: 900;'></p>
                         </div>
 
-                        <div class="caixa" style = 'border-left: 6px solid #231F20'>
-                            <p style = 'color: #231F20; text-align: center; font-weight: 900;'>Perda Percentual</p>
+                        <div class="caixa" id="perdaVar-${contador}" style = 'border-left: 6px solid #231F20'>
+                            <p id="perdaTitulo-${contador}" style = 'color: #231F20; text-align: center; font-weight: 900;'>Perda Percentual</p>
                             <p id="perda-${contador}" style = 'color: #231F20; text-align: center; font-weight: 900;'></p>
                         </div>
 
@@ -232,6 +232,16 @@
             const jitterMedioname = "jitterMedio-" + contador
             const pacotesTotalname = "pacotesTotal-" + contador
             const pacotesPerdidosname = "pacotesPerdidos-" + contador
+            const Latencia = "Latencia-" + contador
+            const rttTitulo = "rtttitulo-" + contador
+            const Variacao = "Variacao-" + contador
+            const VariacaoTitulo = "VariacaoTitulo-" + contador
+            const LatenciaMedianame = "LatenciaMedia-" + contador
+            const rttMedioname = "rttMedio-" + contador
+            const mediaVarname = "mediaVar-" + contador
+            const varTituloname = "varTitulo-" + contador
+            const perdaVarname = "perdaVar-" + contador
+            const perdaTituloname = "perdaTitulo-" + contador
 
             var ctx = document.getElementById(chartname);
 
@@ -336,12 +346,62 @@
                         addData(CoolChart, total_pacotes, [0, last_diff]);
 
                         document.getElementById(rttname).innerHTML = media_ping + ' ms';
+                        if (media_ping > 50) {
+                            document.getElementById(LatenciaMedianame).style.backgroundColor = '#A6192E';
+                            document.getElementById(rttMedioname).style.color = "white"
+                            document.getElementById(rttname).style.color = "white"
+                        } else {
+                            document.getElementById(LatenciaMedianame).style.backgroundColor = '#f8fafc';
+                            document.getElementById(rttMedioname).style.color = "black"
+                            document.getElementById(rttname).style.color = "black"
+                        }
+
                         document.getElementById(rttUltimoname).innerHTML = pingUltimo + ' ms';
+                        if (pingUltimo > 100) {
+                            document.getElementById(rttTitulo).style.color = "white"
+                            document.getElementById(rttUltimoname).style.color = "white"
+                            document.getElementById(Latencia).style.backgroundColor = '#A6192E';
+                        } else {
+                            document.getElementById(Latencia).style.backgroundColor = '#f8fafc';
+                            document.getElementById(rttTitulo).style.color = "black"
+                            document.getElementById(rttUltimoname).style.color = "black"
+                        }
+
                         document.getElementById(jittername).innerHTML = jitter + ' ms';
+                        if (jitter > 10) {
+                            document.getElementById(VariacaoTitulo).style.color = "white"
+                            document.getElementById(jittername).style.color = "white"
+                            document.getElementById(Variacao).style.backgroundColor = '#A6192E';
+                        } else {
+                            document.getElementById(Variacao).style.backgroundColor = '#f8fafc';
+                            document.getElementById(VariacaoTitulo).style.color = "black"
+                            document.getElementById(jittername).style.color = "black"
+                        }
+
                         document.getElementById(jitterMedioname).innerHTML = media_jitter + ' ms';
+                        if (media_jitter > 50) {
+                            document.getElementById(mediaVarname).style.backgroundColor = '#A6192E';
+                            document.getElementById(varTituloname).style.color = "white"
+                            document.getElementById(LatenciaMedianame).style.color = "white"
+                        } else {
+                            document.getElementById(mediaVarname).style.backgroundColor = '#f8fafc';
+                            document.getElementById(varTituloname).style.color = "black"
+                            document.getElementById(LatenciaMedianame).style.color = "black"
+                        }
+
                         document.getElementById(pacotesTotalname).innerHTML = total_pacotes;
                         document.getElementById(pacotesPerdidosname).innerHTML = perda_pacotes;
+
                         document.getElementById(perdaname).innerHTML = perda_percentual + '%';
+                        if (perda_percentual >= 1) {
+                            document.getElementById(perdaVarname).style.backgroundColor = '#A6192E';
+                            document.getElementById(perdaTituloname).style.color = "white"
+                            document.getElementById(perdaname).style.color = "white"
+                        } else {
+                            document.getElementById(perdaVarname).style.backgroundColor = '#f8fafc';
+                            document.getElementById(perdaTituloname).style.color = "black"
+                            document.getElementById(perdaname).style.color = "black"
+                        }
 
                         throw new Error(`O servidor retornou status ${resposta.status} na tabela ${host} - ${tempo}ms`);
                     }
@@ -381,12 +441,62 @@
                         addData(CoolChart, total_pacotes, [0, last_diff]);
 
                         document.getElementById(rttname).innerHTML = media_ping + ' ms';
+                        if (media_ping > 50) {
+                            document.getElementById(LatenciaMedianame).style.backgroundColor = '#A6192E';
+                            document.getElementById(rttMedioname).style.color = "white"
+                            document.getElementById(rttname).style.color = "white"
+                        } else {
+                            document.getElementById(LatenciaMedianame).style.backgroundColor = '#f8fafc';
+                            document.getElementById(rttMedioname).style.color = "black"
+                            document.getElementById(rttname).style.color = "black"
+                        }
+
                         document.getElementById(rttUltimoname).innerHTML = pingUltimo + ' ms';
+                        if (pingUltimo > 100) {
+                            document.getElementById(rttTitulo).style.color = "white"
+                            document.getElementById(rttUltimoname).style.color = "white"
+                            document.getElementById(Latencia).style.backgroundColor = '#A6192E';
+                        } else {
+                            document.getElementById(Latencia).style.backgroundColor = '#f8fafc';
+                            document.getElementById(rttTitulo).style.color = "black"
+                            document.getElementById(rttUltimoname).style.color = "black"
+                        }
+
                         document.getElementById(jittername).innerHTML = jitter + ' ms';
+                        if (jitter > 10) {
+                            document.getElementById(VariacaoTitulo).style.color = "white"
+                            document.getElementById(jittername).style.color = "white"
+                            document.getElementById(Variacao).style.backgroundColor = '#A6192E';
+                        } else {
+                            document.getElementById(Variacao).style.backgroundColor = '#f8fafc';
+                            document.getElementById(VariacaoTitulo).style.color = "black"
+                            document.getElementById(jittername).style.color = "black"
+                        }
+
                         document.getElementById(jitterMedioname).innerHTML = media_jitter + ' ms';
+                        if (media_jitter > 50) {
+                            document.getElementById(mediaVarname).style.backgroundColor = '#A6192E';
+                            document.getElementById(varTituloname).style.color = "white"
+                            document.getElementById(LatenciaMedianame).style.color = "white"
+                        } else {
+                            document.getElementById(mediaVarname).style.backgroundColor = '#f8fafc';
+                            document.getElementById(varTituloname).style.color = "black"
+                            document.getElementById(LatenciaMedianame).style.color = "black"
+                        }
+
                         document.getElementById(pacotesTotalname).innerHTML = total_pacotes;
                         document.getElementById(pacotesPerdidosname).innerHTML = perda_pacotes;
+
                         document.getElementById(perdaname).innerHTML = perda_percentual + '%';
+                        if (perda_percentual >= 1) {
+                            document.getElementById(perdaVarname).style.backgroundColor = '#A6192E';
+                            document.getElementById(perdaTituloname).style.color = "white"
+                            document.getElementById(perdaname).style.color = "white"
+                        } else {
+                            document.getElementById(perdaVarname).style.backgroundColor = '#f8fafc';
+                            document.getElementById(perdaTituloname).style.color = "black"
+                            document.getElementById(perdaname).style.color = "black"
+                        }
                         throw new Error(`TimedOut na Tabela ${host}-${tempo}`);
                     }
 
@@ -421,13 +531,63 @@
 
                     addData(CoolChart, total_pacotes, [dados.rtt_ms, jitter]);
 
-                    document.getElementById(jittername).innerHTML = jitter + ' ms';
-                    document.getElementById(jitterMedioname).innerHTML = media_jitter + ' ms';
                     document.getElementById(rttname).innerHTML = media_ping + ' ms';
+                    if (media_ping > 50) {
+                        document.getElementById(LatenciaMedianame).style.backgroundColor = '#A6192E';
+                        document.getElementById(rttMedioname).style.color = "white"
+                        document.getElementById(rttname).style.color = "white"
+                    } else {
+                        document.getElementById(LatenciaMedianame).style.backgroundColor = '#f8fafc';
+                        document.getElementById(rttMedioname).style.color = "black"
+                        document.getElementById(rttname).style.color = "black"
+                    }
+
                     document.getElementById(rttUltimoname).innerHTML = pingUltimo + ' ms';
+                    if (pingUltimo > 100) {
+                        document.getElementById(rttTitulo).style.color = "white"
+                        document.getElementById(rttUltimoname).style.color = "white"
+                        document.getElementById(Latencia).style.backgroundColor = '#A6192E';
+                    } else {
+                        document.getElementById(Latencia).style.backgroundColor = '#f8fafc';
+                        document.getElementById(rttTitulo).style.color = "black"
+                        document.getElementById(rttUltimoname).style.color = "black"
+                    }
+
+                    document.getElementById(jittername).innerHTML = jitter + ' ms';
+                    if (jitter > 10) {
+                        document.getElementById(VariacaoTitulo).style.color = "white"
+                        document.getElementById(jittername).style.color = "white"
+                        document.getElementById(Variacao).style.backgroundColor = '#A6192E';
+                    } else {
+                        document.getElementById(Variacao).style.backgroundColor = '#f8fafc';
+                        document.getElementById(VariacaoTitulo).style.color = "black"
+                        document.getElementById(jittername).style.color = "black"
+                    }
+
+                    document.getElementById(jitterMedioname).innerHTML = media_jitter + ' ms';
+                    if (media_jitter > 50) {
+                        document.getElementById(mediaVarname).style.backgroundColor = '#A6192E';
+                        document.getElementById(varTituloname).style.color = "white"
+                        document.getElementById(LatenciaMedianame).style.color = "white"
+                    } else {
+                        document.getElementById(mediaVarname).style.backgroundColor = '#f8fafc';
+                        document.getElementById(varTituloname).style.color = "black"
+                        document.getElementById(LatenciaMedianame).style.color = "black"
+                    }
+
                     document.getElementById(pacotesTotalname).innerHTML = total_pacotes;
                     document.getElementById(pacotesPerdidosname).innerHTML = perda_pacotes;
+
                     document.getElementById(perdaname).innerHTML = perda_percentual + '%';
+                    if (perda_percentual >= 1) {
+                        document.getElementById(perdaVarname).style.backgroundColor = '#A6192E';
+                        document.getElementById(perdaTituloname).style.color = "white"
+                        document.getElementById(perdaname).style.color = "white"
+                    } else {
+                        document.getElementById(perdaVarname).style.backgroundColor = '#f8fafc';
+                        document.getElementById(perdaTituloname).style.color = "black"
+                        document.getElementById(perdaname).style.color = "black"
+                    }
 
                 } catch (erro) {
                     document.getElementById("resultado").textContent = "Falha na requisição: " + erro.message;
