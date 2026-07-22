@@ -92,7 +92,6 @@ button:hover {
 #container-bg {
 
     width: 95%;
-    max-width: 1200px;
 
     margin: auto;
 
@@ -176,7 +175,8 @@ canvas {
 }
 
 .sessao {
-
+    flex-basis: 33%;
+    flex-grow: 1;
     display: flex;
 
     align-items: flex-start;
