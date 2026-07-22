@@ -92,23 +92,15 @@ button:hover {
 #container-bg {
 
     width: 95%;
-
     margin: auto;
-
     display: flex;
     flex-wrap: wrap;
-
     justify-content: center;
     align-items: flex-start;
-
     gap: 30px;
-
     background: white;
-
     padding: 25px;
-
     border-radius: 12px;
-
     box-shadow: 0 10px 25px rgba(0, 0, 0, .1);
 }
 
@@ -119,15 +111,16 @@ canvas {
 }
 
 .caixa {
-    width: 150px;
 
+    height: 100%;
+    width: 20%;
     background: #f8fafc;
 
     border-left: 6px solid #A6192E;
 
     border-radius: 10px;
 
-    padding: 18px;
+    padding: 8px;
 
     box-shadow: 0 5px 12px rgba(0, 0, 0, .08);
 
@@ -192,14 +185,16 @@ canvas {
     padding-bottom: 25px;
 
     border-bottom: 1px solid #dcdcdc;
+
+    flex-wrap: wrap;
+    max-width: 50%;
 }
 
 
 .grafico {
 
     flex: 1;
-
-    min-width: 600px;
+    width: 100%;
 }
 
 .grafico canvas {
@@ -211,88 +206,89 @@ canvas {
 
 .dados {
 
-    width: 360px;
+    width: 100%;
 
     flex-wrap: wrap;
 
     display: flex;
 
-    flex-direction:row;
+    flex-direction: row;
 
     gap: 20px;
 }
 
 .botoes {
 
-    width: 150px;
-    height: 110px;
-    display:grid;
-
+    width: 20%;
+    height: 100%;
+    display: grid;
     gap: 10px;
-
 }
 
 /* Popup container - can be anything you want */
 .popup {
-  position: relative;
-  display: inline-block;
-  cursor: pointer;
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  user-select: none;
+    position: relative;
+    display: inline-block;
+    cursor: pointer;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
 }
 
 /* The actual popup */
 .popup .popuptext {
-  visibility: hidden;
-  width: 160px;
-  background-color: #A6192E;
-  color: #fff;
-  text-align: center;
-  border-radius: 6px;
-  padding: 8px 0;
-  position: absolute;
-  z-index: 1;
-  bottom: 125%;
-  left: 50%;
-  margin-left: -80px;
+    visibility: hidden;
+    width: 160px;
+    background-color: #A6192E;
+    color: #fff;
+    text-align: center;
+    border-radius: 6px;
+    padding: 8px 0;
+    position: absolute;
+    z-index: 1;
+    bottom: 125%;
+    left: 50%;
+    margin-left: -80px;
 }
 
 /* Popup arrow */
 .popup .popuptext::after {
-  content: "";
-  position: absolute;
-  top: 100%;
-  left: 50%;
-  margin-left: -5px;
-  border-width: 5px;
-  border-style: solid;
-  border-color: #A6192E transparent transparent transparent;
+    content: "";
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    margin-left: -5px;
+    border-width: 5px;
+    border-style: solid;
+    border-color: #A6192E transparent transparent transparent;
 }
 
 .popup .show {
-  visibility: visible;
-  animation: popupAnim 2s forwards;
+    visibility: visible;
+    animation: popupAnim 2s forwards;
 }
 
 @keyframes popupAnim {
-  0% {
-    opacity: 0;
-  }
-  15% {
-    opacity: 1;
-  }
-  85% {
-    opacity: 1;
-  }
-  100% {
-    opacity: 0;
-    visibility: hidden;
-  }
+    0% {
+        opacity: 0;
+    }
+
+    15% {
+        opacity: 1;
+    }
+
+    85% {
+        opacity: 1;
+    }
+
+    100% {
+        opacity: 0;
+        visibility: hidden;
+    }
 }
 
-#toast-container{
+#toast-container {
     position: fixed;
     bottom: 20px;
     right: 20px;
@@ -302,25 +298,25 @@ canvas {
     z-index: 9999;
 }
 
-.toast{
+.toast {
     min-width: 250px;
     padding: 15px 20px;
     background: #4E9D30;
     color: #fff;
     border-radius: 8px;
-    box-shadow: 0 4px 10px rgba(0,0,0,.2);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, .2);
 
     opacity: 0;
     transform: translateX(100%);
     transition: all .3s ease;
 }
 
-.toast.show{
+.toast.show {
     opacity: 1;
     transform: translateX(0);
 }
 
-.toast.hide{
+.toast.hide {
     opacity: 0;
     transform: translateX(100%);
 }
