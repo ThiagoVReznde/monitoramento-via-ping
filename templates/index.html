@@ -86,45 +86,45 @@
                             ${document.getElementById("temporizador").value.trim()}  
                              ms  
                         </p>
-                        <canvas id="myChart${contador}"></canvas>
+                        <canvas id="myChart-${contador}"></canvas>
 
                     </div>
 
                     <div class="dados">
 
-                        <div class="caixa" id="Latencia-${contador}" style = 'border-left: 6px solid #4E9D30'>
-                            <p id="rtttitulo-${contador}" style = 'color: #231F20; text-align: center; font-weight: 900;'>Latência:</p>
-                            <p id="rttUltimo-${contador}" style = 'color: #231F20; text-align: center; font-weight: 900;'></p>
+                        <div class="caixa status-ok borda-verde" id="LatenciaBack-${contador}">
+                            <p >Latência:</p>
+                            <p id="LatenciaDados-${contador}"  ></p>
                         </div>
 
-                        <div class="caixa" id="LatenciaMedia-${contador}" style = 'border-left: 6px solid #4E9D30'>
-                            <p id="rttMedio-${contador}" style = 'color: #231F20; text-align: center; font-weight: 900;'>Latência Média:</p>
-                            <p id="rtt-${contador}" style = 'color: #231F20; text-align: center; font-weight: 900;'></p>
+                        <div class="caixa status-ok borda-verde" id="MediaLatBack-${contador}">
+                            <p>Latência Média:</p>
+                            <p id="MediaLatDados-${contador}"  ></p>
                         </div>
 
-                        <div class="caixa" id="Variacao-${contador}">
-                            <p id="VariacaoTitulo-${contador}" style = 'color: #231F20; text-align: center; font-weight: 900;'>Jitter:</p>
-                            <p id="jitter-${contador}" style = 'color: #231F20; text-align: center; font-weight: 900;'></p>
+                        <div class="caixa status-ok borda-vermelha" id="JitterBack-${contador}">
+                            <p >Jitter:</p>
+                            <p id="JitterDados-${contador}"  ></p>
                         </div>
 
-                        <div class="caixa" id="mediaVar-${contador}">
-                            <p id="varTitulo-${contador}" style = 'color: #231F20; text-align: center; font-weight: 900;'>Jitter Médio:</p>
-                            <p id="jitterMedio-${contador}" style = 'color: #231F20; text-align: center; font-weight: 900;'></p>
+                        <div class="caixa status-ok borda-vermelha" id="MediaJitBack-${contador}">
+                            <p >Jitter Médio:</p>
+                            <p id="MediaJitDados-${contador}"  ></p>
                         </div>
 
-                        <div class="caixa" style = 'border-left: 6px solid #231F20'>
-                            <p style = 'color: #231F20; text-align: center; font-weight: 900;'>Total de Pacotes</p>
-                            <p id="pacotesTotal-${contador}" style = 'color: #231F20; text-align: center; font-weight: 900;'></p>
+                        <div class="caixa status-ok borda-preta">
+                            <p >Total de Pacotes</p>
+                            <p id="PacotesTotalDados-${contador}"  ></p>
                         </div>
 
-                        <div class="caixa" style = 'border-left: 6px solid #231F20'>
-                            <p style = 'color: #231F20; text-align: center; font-weight: 900;'>Pacotes Perdidos</p>
-                            <p id="pacotesPerdidos-${contador}" style = 'color: #231F20; text-align: center; font-weight: 900;'></p>
+                        <div class="caixa status-ok borda-preta">
+                            <p >Pacotes Perdidos</p>
+                            <p id="PacotesPerdaAlt-${contador}"  ></p>
                         </div>
 
-                        <div class="caixa" id="perdaVar-${contador}" style = 'border-left: 6px solid #231F20'>
-                            <p id="perdaTitulo-${contador}" style = 'color: #231F20; text-align: center; font-weight: 900;'>Perda Percentual</p>
-                            <p id="perda-${contador}" style = 'color: #231F20; text-align: center; font-weight: 900;'></p>
+                        <div class="caixa status-ok borda-preta" id="PacotesPerdaBack-${contador}">
+                            <p>Perda Percentual</p>
+                            <p id="PacotesPerdaDados-${contador}"  ></p>
                         </div>
 
                             <div class="botoes">
@@ -224,26 +224,38 @@
             const yValues_rtt = [];
             const yValues_jit = [];
 
-            const chartname = 'myChart' + contador
-            const perdaname = 'perda-' + contador
-            const rttname = 'rtt-' + contador
-            const rttUltimoname = 'rttUltimo-' + contador
-            const jittername = 'jitter-' + contador
-            const jitterMedioname = "jitterMedio-" + contador
-            const pacotesTotalname = "pacotesTotal-" + contador
-            const pacotesPerdidosname = "pacotesPerdidos-" + contador
-            const Latencia = "Latencia-" + contador
-            const rttTitulo = "rtttitulo-" + contador
-            const Variacao = "Variacao-" + contador
-            const VariacaoTitulo = "VariacaoTitulo-" + contador
-            const LatenciaMedianame = "LatenciaMedia-" + contador
-            const rttMedioname = "rttMedio-" + contador
-            const mediaVarname = "mediaVar-" + contador
-            const varTituloname = "varTitulo-" + contador
-            const perdaVarname = "perdaVar-" + contador
-            const perdaTituloname = "perdaTitulo-" + contador
+            const ChartTabela = 'myChart-' + contador
 
-            var ctx = document.getElementById(chartname);
+            //Latencia
+            const LatenciaBackConst = "LatenciaBack-" + contador
+            const LatenciaBackAviso = document.getElementById(`LatenciaBack-${contador}`);
+            const LatenciaDadosConst = 'LatenciaDados-' + contador
+
+            //Media da Latencia
+            const MediaLatBackConst = "MediaLatBack-" + contador
+            const MediaLatBackAviso = document.getElementById(`MediaLatBack-${contador}`);
+            const MediaLatDadosConst = 'MediaLatDados-' + contador
+
+            //Jitter
+            const JitterBackConst = "JitterBack-" + contador
+            const JitterBackAviso = document.getElementById(`JitterBack-${contador}`);
+            const JitterDadosConst = 'JitterDados-' + contador
+
+            //Media do Jitter
+            const MediaJitBackConst = "MediaJitBack-" + contador
+            const MediaJitBackAviso = document.getElementById(`MediaJitBack-${contador}`);
+            const MediaJitDadosConst = "MediaJitDados-" + contador
+
+            //Percentual de Pacotes Perdidos
+            const PacotesPerdaBackConst = "PacotesPerdaBack-" + contador
+            const PacotesPerdaBackAviso = document.getElementById(`PacotesPerdaBack-${contador}`);
+            const PacotesPerdaDadosConst = 'PacotesPerdaDados-' + contador
+
+            //Total Pacotes e Perda Total de Pacotes
+            const PacotesTotalDadosConst = "PacotesTotalDados-" + contador
+            const PacotesPerdaAltConst = "PacotesPerdaAlt-" + contador
+
+            var ctx = document.getElementById(ChartTabela);
 
             var CoolChart = new Chart(ctx, {
                 type: "line",
@@ -281,15 +293,15 @@
             const host = document.getElementById("host").value.trim();
             const tempo = document.getElementById("temporizador").value;
 
-            let perda_pacotes = 0
-            let total_pacotes = 0
+            let PacotesPerdaAltVar = 0
+            let PacotesTotalVar = 0
             let last_diff = 0
             let soma_ping = 0
             let soma_jitter = 0
-            let media_jitter = 0
-            let media_ping = 0
-            let pingUltimo = 0
-            let perda_percentual = 0
+            let MediaJitVar = 0
+            let MediaLatVar = 0
+            let LatenciaVar = 0
+            let PacotesPerdaVar = 0
             let dados
 
             while (true) {
@@ -308,99 +320,80 @@
                 }
 
                 try {
-                    total_pacotes = total_pacotes + 1
+                    PacotesTotalVar = PacotesTotalVar + 1
 
                     const resposta = await fetch(`/ping/${encodeURIComponent(host)}`);
 
                     if (!resposta.ok) {
-                        perda_pacotes = perda_pacotes + 1
+                        PacotesPerdaAltVar = PacotesPerdaAltVar + 1
                         dados = {
                             rtt_ms: 0
                         };
                         last_diff = 0
 
-                        media_ping =
-                            total_pacotes > 0
-                                ? soma_ping / total_pacotes
+                        MediaLatVar =
+                            PacotesTotalVar > 0
+                                ? soma_ping / PacotesTotalVar
                                 : 0;
-                        media_ping = media_ping.toFixed(2)
-                        pingUltimo = dados.rtt_ms
-                        pingUltimo = pingUltimo.toFixed(2)
+                        MediaLatVar = MediaLatVar.toFixed(2)
+                        LatenciaVar = dados.rtt_ms
+                        LatenciaVar = LatenciaVar.toFixed(2)
 
                         if (xValues.length == 0) {
                             last_diff = dados.rtt_ms
                         }
 
-                        let jitter = Math.abs((dados.rtt_ms - last_diff))
-                        soma_jitter = soma_jitter + jitter;
-                        jitter = jitter.toFixed(2)
-                        media_jitter =
-                            total_pacotes > 0
-                                ? soma_jitter / total_pacotes
+                        let JitterVar = Math.abs((dados.rtt_ms - last_diff))
+                        soma_jitter = soma_jitter + JitterVar;
+                        JitterVar = JitterVar.toFixed(2)
+                        MediaJitVar =
+                            PacotesTotalVar > 0
+                                ? soma_jitter / PacotesTotalVar
                                 : 0;
-                        media_jitter = media_jitter.toFixed(2)
+                        MediaJitVar = MediaJitVar.toFixed(2)
 
-                        perda_percentual = perda_pacotes / total_pacotes * 100
-                        perda_percentual = perda_percentual.toFixed(2)
+                        PacotesPerdaVar = PacotesPerdaAltVar / PacotesTotalVar * 100
+                        PacotesPerdaVar = PacotesPerdaVar.toFixed(2)
 
-                        addData(CoolChart, total_pacotes, [0, last_diff]);
+                        addData(CoolChart, PacotesTotalVar, [0, last_diff]);
 
-                        document.getElementById(rttname).innerHTML = media_ping + ' ms';
-                        if (media_ping > 50) {
-                            document.getElementById(LatenciaMedianame).style.backgroundColor = '#A6192E';
-                            document.getElementById(rttMedioname).style.color = "white"
-                            document.getElementById(rttname).style.color = "white"
+                        document.getElementById(MediaLatDadosConst).innerHTML = MediaLatVar + ' ms';
+                        if (MediaLatVar > 50) {
+                            MediaLatBackAviso.classList.replace("status-ok", "status-alerta");
                         } else {
-                            document.getElementById(LatenciaMedianame).style.backgroundColor = '#f8fafc';
-                            document.getElementById(rttMedioname).style.color = "black"
-                            document.getElementById(rttname).style.color = "black"
+                            MediaLatBackAviso.classList.replace("status-alerta", "status-ok");
                         }
 
-                        document.getElementById(rttUltimoname).innerHTML = pingUltimo + ' ms';
-                        if (pingUltimo > 100) {
-                            document.getElementById(rttTitulo).style.color = "white"
-                            document.getElementById(rttUltimoname).style.color = "white"
-                            document.getElementById(Latencia).style.backgroundColor = '#A6192E';
+                        document.getElementById(LatenciaDadosConst).innerHTML = LatenciaVar + ' ms';
+
+                        if (LatenciaVar > 100) {
+                            LatenciaBackAviso.classList.replace("status-ok", "status-alerta");
                         } else {
-                            document.getElementById(Latencia).style.backgroundColor = '#f8fafc';
-                            document.getElementById(rttTitulo).style.color = "black"
-                            document.getElementById(rttUltimoname).style.color = "black"
+                            LatenciaBackAviso.classList.replace("status-alerta", "status-ok");
                         }
 
-                        document.getElementById(jittername).innerHTML = jitter + ' ms';
-                        if (jitter > 10) {
-                            document.getElementById(VariacaoTitulo).style.color = "white"
-                            document.getElementById(jittername).style.color = "white"
-                            document.getElementById(Variacao).style.backgroundColor = '#A6192E';
+                        document.getElementById(JitterDadosConst).innerHTML = JitterVar + ' ms';
+                        if (JitterVar > 10) {
+                            JitterBackAviso.classList.replace("status-ok", "status-alerta");
                         } else {
-                            document.getElementById(Variacao).style.backgroundColor = '#f8fafc';
-                            document.getElementById(VariacaoTitulo).style.color = "black"
-                            document.getElementById(jittername).style.color = "black"
+                            JitterBackAviso.classList.replace("status-alerta", "status-ok");
                         }
 
-                        document.getElementById(jitterMedioname).innerHTML = media_jitter + ' ms';
-                        if (media_jitter > 50) {
-                            document.getElementById(mediaVarname).style.backgroundColor = '#A6192E';
-                            document.getElementById(varTituloname).style.color = "white"
-                            document.getElementById(LatenciaMedianame).style.color = "white"
+                        document.getElementById(MediaJitDadosConst).innerHTML = MediaJitVar + ' ms';
+                        if (MediaJitVar > 50) {
+                            MediaJitBackAviso.classList.replace("status-ok", "status-alerta");
                         } else {
-                            document.getElementById(mediaVarname).style.backgroundColor = '#f8fafc';
-                            document.getElementById(varTituloname).style.color = "black"
-                            document.getElementById(LatenciaMedianame).style.color = "black"
+                            MediaJitBackAviso.classList.replace("status-alerta", "status-ok");
                         }
 
-                        document.getElementById(pacotesTotalname).innerHTML = total_pacotes;
-                        document.getElementById(pacotesPerdidosname).innerHTML = perda_pacotes;
+                        document.getElementById(PacotesTotalDadosConst).innerHTML = PacotesTotalVar;
+                        document.getElementById(PacotesPerdaAltConst).innerHTML = PacotesPerdaAltVar;
 
-                        document.getElementById(perdaname).innerHTML = perda_percentual + '%';
-                        if (perda_percentual >= 1) {
-                            document.getElementById(perdaVarname).style.backgroundColor = '#A6192E';
-                            document.getElementById(perdaTituloname).style.color = "white"
-                            document.getElementById(perdaname).style.color = "white"
+                        document.getElementById(PacotesPerdaDadosConst).innerHTML = PacotesPerdaVar + '%';
+                        if (PacotesPerdaVar >= 1) {
+                            PacotesPerdaBackAviso.classList.replace("status-ok", "status-alerta");
                         } else {
-                            document.getElementById(perdaVarname).style.backgroundColor = '#f8fafc';
-                            document.getElementById(perdaTituloname).style.color = "black"
-                            document.getElementById(perdaname).style.color = "black"
+                            PacotesPerdaBackAviso.classList.replace("status-alerta", "status-ok");
                         }
 
                         throw new Error(`O servidor retornou status ${resposta.status} na tabela ${host} - ${tempo}ms`);
@@ -409,93 +402,71 @@
                     dados = await resposta.json();
 
                     if (dados.rtt_ms == null) {
-                        perda_pacotes = perda_pacotes + 1
+                        PacotesPerdaAltVar = PacotesPerdaAltVar + 1
                         dados = {
                             rtt_ms: 0
                         };
                         last_diff = 0
 
-                        media_ping =
-                            total_pacotes > 0
-                                ? soma_ping / total_pacotes
+                        MediaLatVar =
+                            PacotesTotalVar > 0
+                                ? soma_ping / PacotesTotalVar
                                 : 0;
-                        media_ping = media_ping.toFixed(2)
-                        pingUltimo = dados.rtt_ms
-                        pingUltimo = pingUltimo.toFixed(2)
+                        MediaLatVar = MediaLatVar.toFixed(2)
+                        LatenciaVar = dados.rtt_ms
+                        LatenciaVar = LatenciaVar.toFixed(2)
 
                         if (xValues.length == 0) {
                             last_diff = dados.rtt_ms
                         }
-                        let jitter = Math.abs((dados.rtt_ms - last_diff))
-                        soma_jitter = soma_jitter + jitter;
+                        let JitterVar = Math.abs((dados.rtt_ms - last_diff))
+                        soma_jitter = soma_jitter + JitterVar;
 
-                        jitter = jitter.toFixed(2)
-                        media_jitter =
-                            total_pacotes > 0
-                                ? soma_jitter / total_pacotes
+                        JitterVar = JitterVar.toFixed(2)
+                        MediaJitVar =
+                            PacotesTotalVar > 0
+                                ? soma_jitter / PacotesTotalVar
                                 : 0;
-                        media_jitter = media_jitter.toFixed(2)
-                        perda_percentual = perda_pacotes / total_pacotes * 100
-                        perda_percentual = perda_percentual.toFixed(2)
+                        MediaJitVar = MediaJitVar.toFixed(2)
+                        PacotesPerdaVar = PacotesPerdaAltVar / PacotesTotalVar * 100
+                        PacotesPerdaVar = PacotesPerdaVar.toFixed(2)
 
-                        addData(CoolChart, total_pacotes, [0, last_diff]);
+                        addData(CoolChart, PacotesTotalVar, [0, last_diff]);
 
-                        document.getElementById(rttname).innerHTML = media_ping + ' ms';
-                        if (media_ping > 50) {
-                            document.getElementById(LatenciaMedianame).style.backgroundColor = '#A6192E';
-                            document.getElementById(rttMedioname).style.color = "white"
-                            document.getElementById(rttname).style.color = "white"
+                        document.getElementById(MediaLatDadosConst).innerHTML = MediaLatVar + ' ms';
+                        if (MediaLatVar > 50) {
+                            MediaLatBackAviso.classList.replace("status-ok", "status-alerta");
                         } else {
-                            document.getElementById(LatenciaMedianame).style.backgroundColor = '#f8fafc';
-                            document.getElementById(rttMedioname).style.color = "black"
-                            document.getElementById(rttname).style.color = "black"
+                            MediaLatBackAviso.classList.replace("status-alerta", "status-ok");
                         }
 
-                        document.getElementById(rttUltimoname).innerHTML = pingUltimo + ' ms';
-                        if (pingUltimo > 100) {
-                            document.getElementById(rttTitulo).style.color = "white"
-                            document.getElementById(rttUltimoname).style.color = "white"
-                            document.getElementById(Latencia).style.backgroundColor = '#A6192E';
+                        document.getElementById(LatenciaDadosConst).innerHTML = LatenciaVar + ' ms';
+                        if (LatenciaVar > 100) {
+                            LatenciaBackAviso.classList.replace("status-ok", "status-alerta");
                         } else {
-                            document.getElementById(Latencia).style.backgroundColor = '#f8fafc';
-                            document.getElementById(rttTitulo).style.color = "black"
-                            document.getElementById(rttUltimoname).style.color = "black"
+                            LatenciaBackAviso.classList.replace("status-alerta", "status-ok");
+                        }
+                        document.getElementById(JitterDadosConst).innerHTML = JitterVar + ' ms';
+                        if (JitterVar > 10) {
+                            JitterBackAviso.classList.replace("status-ok", "status-alerta");
+                        } else {
+                            JitterBackAviso.classList.replace("status-alerta", "status-ok");
                         }
 
-                        document.getElementById(jittername).innerHTML = jitter + ' ms';
-                        if (jitter > 10) {
-                            document.getElementById(VariacaoTitulo).style.color = "white"
-                            document.getElementById(jittername).style.color = "white"
-                            document.getElementById(Variacao).style.backgroundColor = '#A6192E';
+                        document.getElementById(MediaJitDadosConst).innerHTML = MediaJitVar + ' ms';
+                        if (MediaJitVar > 50) {
+                            MediaJitBackAviso.classList.replace("status-ok", "status-alerta");
                         } else {
-                            document.getElementById(Variacao).style.backgroundColor = '#f8fafc';
-                            document.getElementById(VariacaoTitulo).style.color = "black"
-                            document.getElementById(jittername).style.color = "black"
+                            MediaJitBackAviso.classList.replace("status-alerta", "status-ok");
                         }
+                        document.getElementById(PacotesTotalDadosConst).innerHTML = PacotesTotalVar;
+                        document.getElementById(PacotesPerdaAltConst).innerHTML = PacotesPerdaAltVar;
 
-                        document.getElementById(jitterMedioname).innerHTML = media_jitter + ' ms';
-                        if (media_jitter > 50) {
-                            document.getElementById(mediaVarname).style.backgroundColor = '#A6192E';
-                            document.getElementById(varTituloname).style.color = "white"
-                            document.getElementById(LatenciaMedianame).style.color = "white"
+                        document.getElementById(PacotesPerdaDadosConst).innerHTML = PacotesPerdaVar + '%';
+                        if (PacotesPerdaVar >= 1) {
+                            PacotesPerdaBackAviso.classList.replace("status-ok", "status-alerta");
                         } else {
-                            document.getElementById(mediaVarname).style.backgroundColor = '#f8fafc';
-                            document.getElementById(varTituloname).style.color = "black"
-                            document.getElementById(LatenciaMedianame).style.color = "black"
-                        }
-
-                        document.getElementById(pacotesTotalname).innerHTML = total_pacotes;
-                        document.getElementById(pacotesPerdidosname).innerHTML = perda_pacotes;
-
-                        document.getElementById(perdaname).innerHTML = perda_percentual + '%';
-                        if (perda_percentual >= 1) {
-                            document.getElementById(perdaVarname).style.backgroundColor = '#A6192E';
-                            document.getElementById(perdaTituloname).style.color = "white"
-                            document.getElementById(perdaname).style.color = "white"
-                        } else {
-                            document.getElementById(perdaVarname).style.backgroundColor = '#f8fafc';
-                            document.getElementById(perdaTituloname).style.color = "black"
-                            document.getElementById(perdaname).style.color = "black"
+                            PacotesPerdaBackAviso.classList.replace("status-alerta", "status-ok");
                         }
                         throw new Error(`TimedOut na Tabela ${host}-${tempo}`);
                     }
@@ -506,87 +477,66 @@
                         last_diff = dados.rtt_ms
                     }
 
-                    let jitter = Math.abs((dados.rtt_ms - last_diff))
-                    soma_jitter = soma_jitter + jitter;
+                    let JitterVar = Math.abs((dados.rtt_ms - last_diff))
+                    soma_jitter = soma_jitter + JitterVar;
 
-                    jitter = jitter.toFixed(2)
-                    media_jitter =
-                        total_pacotes > 0
-                            ? soma_jitter / total_pacotes
+                    JitterVar = JitterVar.toFixed(2)
+                    MediaJitVar =
+                        PacotesTotalVar > 0
+                            ? soma_jitter / PacotesTotalVar
                             : 0;
-                    media_jitter = media_jitter.toFixed(2)
+                    MediaJitVar = MediaJitVar.toFixed(2)
 
                     last_diff = dados.rtt_ms
 
-                    media_ping =
-                        total_pacotes > 0
-                            ? soma_ping / total_pacotes
+                    MediaLatVar =
+                        PacotesTotalVar > 0
+                            ? soma_ping / PacotesTotalVar
                             : 0;
-                    media_ping = media_ping.toFixed(2)
-                    pingUltimo = dados.rtt_ms
-                    pingUltimo = pingUltimo.toFixed(2)
+                    MediaLatVar = MediaLatVar.toFixed(2)
+                    LatenciaVar = dados.rtt_ms
+                    LatenciaVar = LatenciaVar.toFixed(2)
 
-                    perda_percentual = perda_pacotes / total_pacotes * 100
-                    perda_percentual = perda_percentual.toFixed(2)
+                    PacotesPerdaVar = PacotesPerdaAltVar / PacotesTotalVar * 100
+                    PacotesPerdaVar = PacotesPerdaVar.toFixed(2)
 
-                    addData(CoolChart, total_pacotes, [dados.rtt_ms, jitter]);
+                    addData(CoolChart, PacotesTotalVar, [dados.rtt_ms, JitterVar]);
 
-                    document.getElementById(rttname).innerHTML = media_ping + ' ms';
-                    if (media_ping > 50) {
-                        document.getElementById(LatenciaMedianame).style.backgroundColor = '#A6192E';
-                        document.getElementById(rttMedioname).style.color = "white"
-                        document.getElementById(rttname).style.color = "white"
+                    document.getElementById(MediaLatDadosConst).innerHTML = MediaLatVar + ' ms';
+                    if (MediaLatVar > 50) {
+                        MediaLatBackAviso.classList.replace("status-ok", "status-alerta");
                     } else {
-                        document.getElementById(LatenciaMedianame).style.backgroundColor = '#f8fafc';
-                        document.getElementById(rttMedioname).style.color = "black"
-                        document.getElementById(rttname).style.color = "black"
+                        MediaLatBackAviso.classList.replace("status-alerta", "status-ok");
                     }
 
-                    document.getElementById(rttUltimoname).innerHTML = pingUltimo + ' ms';
-                    if (pingUltimo > 100) {
-                        document.getElementById(rttTitulo).style.color = "white"
-                        document.getElementById(rttUltimoname).style.color = "white"
-                        document.getElementById(Latencia).style.backgroundColor = '#A6192E';
+                    document.getElementById(LatenciaDadosConst).innerHTML = LatenciaVar + ' ms';
+                    if (LatenciaVar > 100) {
+                        LatenciaBackAviso.classList.replace("status-ok", "status-alerta");
                     } else {
-                        document.getElementById(Latencia).style.backgroundColor = '#f8fafc';
-                        document.getElementById(rttTitulo).style.color = "black"
-                        document.getElementById(rttUltimoname).style.color = "black"
+                        LatenciaBackAviso.classList.replace("status-alerta", "status-ok");
+                    }
+                    document.getElementById(JitterDadosConst).innerHTML = JitterVar + ' ms';
+                    if (JitterVar > 10) {
+                        JitterBackAviso.classList.replace("status-ok", "status-alerta");
+                    } else {
+                        JitterBackAviso.classList.replace("status-alerta", "status-ok");
                     }
 
-                    document.getElementById(jittername).innerHTML = jitter + ' ms';
-                    if (jitter > 10) {
-                        document.getElementById(VariacaoTitulo).style.color = "white"
-                        document.getElementById(jittername).style.color = "white"
-                        document.getElementById(Variacao).style.backgroundColor = '#A6192E';
+                    document.getElementById(MediaJitDadosConst).innerHTML = MediaJitVar + ' ms';
+                    if (MediaJitVar > 50) {
+                        MediaJitBackAviso.classList.replace("status-ok", "status-alerta");
                     } else {
-                        document.getElementById(Variacao).style.backgroundColor = '#f8fafc';
-                        document.getElementById(VariacaoTitulo).style.color = "black"
-                        document.getElementById(jittername).style.color = "black"
+                        MediaJitBackAviso.classList.replace("status-alerta", "status-ok");
                     }
 
-                    document.getElementById(jitterMedioname).innerHTML = media_jitter + ' ms';
-                    if (media_jitter > 50) {
-                        document.getElementById(mediaVarname).style.backgroundColor = '#A6192E';
-                        document.getElementById(varTituloname).style.color = "white"
-                        document.getElementById(LatenciaMedianame).style.color = "white"
-                    } else {
-                        document.getElementById(mediaVarname).style.backgroundColor = '#f8fafc';
-                        document.getElementById(varTituloname).style.color = "black"
-                        document.getElementById(LatenciaMedianame).style.color = "black"
-                    }
+                    document.getElementById(PacotesTotalDadosConst).innerHTML = PacotesTotalVar;
+                    document.getElementById(PacotesPerdaAltConst).innerHTML = PacotesPerdaAltVar;
 
-                    document.getElementById(pacotesTotalname).innerHTML = total_pacotes;
-                    document.getElementById(pacotesPerdidosname).innerHTML = perda_pacotes;
-
-                    document.getElementById(perdaname).innerHTML = perda_percentual + '%';
-                    if (perda_percentual >= 1) {
-                        document.getElementById(perdaVarname).style.backgroundColor = '#A6192E';
-                        document.getElementById(perdaTituloname).style.color = "white"
-                        document.getElementById(perdaname).style.color = "white"
+                    document.getElementById(PacotesPerdaDadosConst).innerHTML = PacotesPerdaVar + '%';
+                    if (PacotesPerdaVar >= 1) {
+                        PacotesPerdaBackAviso.classList.replace("status-ok", "status-alerta");
                     } else {
-                        document.getElementById(perdaVarname).style.backgroundColor = '#f8fafc';
-                        document.getElementById(perdaTituloname).style.color = "black"
-                        document.getElementById(perdaname).style.color = "black"
+                        PacotesPerdaBackAviso.classList.replace("status-alerta", "status-ok");
                     }
 
                 } catch (erro) {
